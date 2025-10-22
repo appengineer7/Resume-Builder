@@ -33,7 +33,7 @@ const submitContactForm = async (req, res) => {
 
     const mailOptions = {
       from: `Resume Builder <${process.env.EMAIL_USER}>`,
-      to: "saadlipika@gmail.com",
+      to: "resumebuilder@nexelix.tech",
       replyTo: email,
       subject: "New Contact Form Submission",
       html: `
