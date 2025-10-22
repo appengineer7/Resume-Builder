@@ -1,197 +1,307 @@
-// src/components/templates/BoldResume.jsx
 import React from "react";
-import { Mail, Phone, MapPin, Globe } from "lucide-react";
 
-export default function BoldResume({
-  data,
-  color = "#F97316", 
-  font = "Arial, sans-serif", 
-}) {
-  const { 
-    personal = {}, 
-    experiences = [], 
-    education = [], 
-    skills = [],
-    projects = [],
-    certifications = [],
-    hobbies = []
-  } = data;
+export default function ResumeTemplate({ data, color = "#111827", font = "Inter" }) {
+  const { personal, summary, experiences, education, skills } = data || {};
+
+  // Default data from template
+  const defaultPersonal = personal || {
+    fullName: "OLIVIA WALKER",
+    title: "PROFESSIONAL TITLE",
+    phone: "1-123-234-123",
+    email: "email@email.com",
+    location: "City, State, Country",
+    linkedin: "@username"
+  };
+
+  const defaultSummary = summary || "Write a summary of your qualifications and skills. Things you can mention: Number of years of experience in the field, relevant credentials, training, education, and accomplishments – mention relating to the job objective, or a quality of yours aligning to what the company is looking to hire. Quantify your career highlights with real numbers.";
+
+  const defaultCoreSkills = skills?.core || [
+    "Project Management",
+    "Strategic Thinking",
+    "Team Management",
+    "Forward Thinking, Planning",
+    "Business Ethics"
+  ];
+
+  const defaultTechnicalSkills = skills?.technical || [
+    "MS Word & Excel",
+    "Mac OS PC Word & Excel",
+    "Adobe Photoshop CC",
+    "Social Media Marketing"
+  ];
+
+  const defaultEducation = education || [
+    {
+      degree: "BACHELOR'S DIPLOMA",
+      institution: "University College Name",
+      location: "City, State, Country",
+      years: "YEAR—YEAR"
+    }
+  ];
+
+  const defaultExperiences = experiences || [
+    {
+      title: "/PROFESSIONAL TITLE",
+      company: "/COMPANY NAME",
+      location: "City, State, Country",
+      years: "YEAR—YEAR",
+      description: "Write a brief job and company description. Highlight your main achievements at the company instead of simply listing your tasks. Show real numbers and examples. When starting this you will copy, highlight the font 'text' and type in your resume (CTRL or CMD+C), go to keep font type, copy the font of your old resume (CTRL or CMD+V), if your template, right-click, select paste special, choose unformatted text.",
+      bullets: [
+        "• To keep font type, copy the font of your old resume (CTRL or CMD+C), go to keep font type, copy the font of your old resume (CTRL or CMD+V), if your template, right-click, select paste special, choose unformatted text.",
+        "• Always highlight simply your tasks. Show real numbers and examples. Listing your basic responsibilities or daily tasks; do this before-",
+        "• Give quantifiable examples of your achievements—“real” numbers—like positive statistics, customer ratings, or profit increases."
+      ]
+    },
+    {
+      title: "/PROFESSIONAL TITLE",
+      company: "/COMPANY NAME",
+      location: "City, State, Country",
+      years: "YEAR—YEAR",
+      description: "Write a brief job and company description. Highlight your main achievements at the company instead of simply listing your tasks. Show real numbers and examples.",
+      bullets: [
+        "• An example of profit increase would be “40% improvement of monthly-"
+      ]
+    }
+  ];
 
   return (
     <div
-      className="mx-auto overflow-hidden relative"
+      className="bg-white shadow-lg mx-auto"
       style={{
         width: "210mm",
         height: "297mm",
-        fontFamily: font,
-        background: color,
-        color: "#333333",
+        padding: "20mm 15mm",
+        fontFamily: `${font}, Arial, sans-serif`,
+        fontSize: "10px",
+        lineHeight: "1.3",
+        color: "#333",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      {/* Diagonal split background */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: '100%', backgroundColor: '#1F2937', transform: 'skewX(-12deg)', transformOrigin: 'top left', zIndex: 0 }}></div>
-      <div style={{ position: 'absolute', top: 0, right: 0, width: '50%', height: '100%', backgroundColor: '#F3F4F6', zIndex: 0 }}></div>
+      {/* Header */}
+      <div style={{ textAlign: "center", marginBottom: "15px" }}>
+        <h1
+          style={{
+            fontSize: "32px",
+            fontWeight: "bold",
+            color,
+            margin: "0 0 5px 0",
+            textTransform: "uppercase",
+            letterSpacing: "2px",
+          }}
+        >
+          {defaultPersonal.fullName}
+        </h1>
+        <p
+          style={{
+            fontSize: "16px",
+            fontWeight: "600",
+            color: shadeColor(color, 0.2),
+            margin: "0 0 10px 0",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+          }}
+        >
+          {defaultPersonal.title}
+        </p>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "20px",
+            fontSize: "11px",
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <div style={{ width: "8px", height: "8px", background: "#ddd", borderRadius: "50%" }} />
+            <span>{defaultPersonal.phone}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <span>@</span>
+            <span>{defaultPersonal.email}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <div style={{ width: "8px", height: "8px", background: "#ddd", borderRadius: "50%" }} />
+            <span>{defaultPersonal.location}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+            <span>in</span>
+            <span>LinkedIn {defaultPersonal.linkedin}</span>
+          </div>
+        </div>
+      </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex h-full">
-        {/* Left Sidebar - Dark */}
-        <aside className="w-1/2 p-6 flex flex-col" style={{ color: '#FFFFFF' }}>
-          {/* Profile Image */}
-          <div className="mb-8 flex justify-center">
-            <div className="rounded-full overflow-hidden border-4" style={{ width: '120px', height: '120px', borderColor: color }}>
-              {personal.profileImage ? (
-                <img src={personal.profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <div className="flex items-center justify-center h-full bg-gray-200 text-gray-500">Photo</div>
-              )}
-            </div>
+      {/* Professional Summary */}
+      <div style={{ marginBottom: "20px" }}>
+        <h2
+          style={{
+            fontSize: "12px",
+            fontWeight: "bold",
+            color,
+            margin: "0 0 8px 0",
+            textTransform: "uppercase",
+            letterSpacing: "0.5px",
+            borderBottom: "1px solid #e5e7eb",
+            paddingBottom: "2px",
+          }}
+        >
+          Professional Summary
+        </h2>
+        <p style={{ fontSize: "10px", textAlign: "justify", lineHeight: "1.4" }}>
+          {defaultSummary}
+        </p>
+      </div>
+
+      {/* Two-Column Layout */}
+      <div style={{ display: "flex", gap: "25px", flex: 1, minHeight: "0" }}>
+        {/* Left Column: Skills & Education */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "20px" }}>
+          {/* Core Skills */}
+          <div>
+            <h3
+              style={{
+                fontSize: "11px",
+                fontWeight: "bold",
+                color,
+                margin: "0 0 6px 0",
+                textTransform: "uppercase",
+                letterSpacing: "0.3px",
+              }}
+            >
+              Core Skills
+            </h3>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {defaultCoreSkills.map((skill, i) => (
+                <li key={i} style={{ fontSize: "10px", marginBottom: "3px", lineHeight: "1.2" }}>
+                  {skill}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Contact Me */}
-          <SectionSidebar title="Contact Me" color={color}>
-            {personal.phone && <ItemSidebar icon={<Phone size={16} />} text={personal.phone} />}
-            {personal.email && <ItemSidebar icon={<Mail size={16} />} text={personal.email} />}
-            {personal.website && <ItemSidebar icon={<Globe size={16} />} text={personal.website} />}
-            {personal.location && <ItemSidebar icon={<MapPin size={16} />} text={personal.location} />}
-          </SectionSidebar>
-
+          {/* Technical Skills */}
+          <div>
+            <h3
+              style={{
+                fontSize: "11px",
+                fontWeight: "bold",
+                color,
+                margin: "0 0 6px 0",
+                textTransform: "uppercase",
+                letterSpacing: "0.3px",
+              }}
+            >
+              Technical
+            </h3>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {defaultTechnicalSkills.map((skill, i) => (
+                <li key={i} style={{ fontSize: "10px", marginBottom: "3px", lineHeight: "1.2" }}>
+                  {skill}
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* Education */}
-          {education.length > 0 && (
-            <SectionSidebar title="Education" color={color}>
-              {education.map((edu, i) => (
-                <div key={i} className="mb-4">
-                  <p className="text-sm font-bold uppercase">{edu.institution}</p>
-                  <p className="text-xs">{edu.degree}</p>
-                  <p className="text-xs">{edu.from} - {edu.to}</p>
+          <div style={{ flex: 1 }}>
+            <h3
+              style={{
+                fontSize: "11px",
+                fontWeight: "bold",
+                color,
+                margin: "0 0 6px 0",
+                textTransform: "uppercase",
+                letterSpacing: "0.3px",
+              }}
+            >
+              Education
+            </h3>
+            {defaultEducation.map((edu, i) => (
+              <div key={i} style={{ marginBottom: "12px" }}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: "600",
+                    marginBottom: "2px",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {edu.degree}
                 </div>
-              ))}
-            </SectionSidebar>
-          )}
-
-          {/* Skills */}
-          {skills.length > 0 && (
-            <SectionSidebar title="Skills" color={color}>
-              {skills.map((skill, i) => (
-                <div key={i} className="mb-2 flex items-center justify-between">
-                  <p className="text-xs">{typeof skill === 'object' ? skill.name : skill}</p>
-                  <div className="w-1/2 h-2 bg-gray-700 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{ width: typeof skill === 'object' ? `${skill.level || 70}%` : '70%', backgroundColor: color }}
-                    />
-                  </div>
+                <div style={{ fontSize: "10px", marginBottom: "2px" }}>{edu.institution}</div>
+                <div style={{ fontSize: "10px", color: "#666", marginBottom: "2px" }}>
+                  {edu.location}
                 </div>
-              ))}
-            </SectionSidebar>
-          )}
-
-          {/* Certifications */}
-          {certifications.length > 0 && (
-            <SectionSidebar title="Certifications" color={color}>
-              {certifications.map((cert, i) => (
-                <div key={i} className="mb-2">
-                  <p className="text-xs font-semibold">{cert.name} {cert.date && `(${cert.date})`}</p>
-                  {cert.issuer && <p className="text-xs">{cert.issuer}</p>}
-                </div>
-              ))}
-            </SectionSidebar>
-          )}
-
-          {/* Hobbies */}
-          {personal.hobbies.length > 0 && (
-            <SectionSidebar title="Hobbies" color={color}>
-              <div className="flex flex-wrap gap-2">
-                {personal.hobbies.map((hobby, i) => (
-                  <span key={i} className="text-xs bg-gray-500 px-2 py-1 rounded">{typeof hobby === 'object' ? hobby.name : hobby}</span>
-                ))}
+                <div style={{ fontSize: "10px", color: "#666" }}>{edu.years}</div>
               </div>
-            </SectionSidebar>
-          )}
-        </aside>
-
-        {/* Right Content - Light */}
-        <main className="w-1/2 p-6 flex flex-col justify-start">
-          {/* Name and Title */}
-          <div className="mb-8 text-right">
-            <h1 className="text-3xl font-bold uppercase" style={{ color: color }}>{personal.fullName || "Brian R. Baxter"}</h1>
-            <p className="text-lg uppercase">{personal.title || "Graphic & Web Designer"}</p>
+            ))}
           </div>
+        </div>
 
-          {/* About Me */}
-          {personal.summary && (
-            <SectionMain title="About Me" color={color}>
-              <p className="text-sm leading-relaxed">{personal.summary}</p>
-            </SectionMain>
-          )}
-
-          {/* Job Experience */}
-          {experiences.length > 0 && (
-            <SectionMain title="Job Experience" color={color}>
-              {experiences.map((exp, i) => (
-                <div key={i} className="mb-4">
-                  <div className="flex justify-between items-start">
-                    <p className="font-bold text-sm uppercase">{exp.title}</p>
-                    <p className="text-xs text-gray-500">{exp.from} - {exp.to || "Present"}</p>
+        {/* Right Column: Professional Experience */}
+        <div style={{ flex: 1, paddingLeft: "25px", borderLeft: "1px solid #e5e7eb" }}>
+          <h3
+            style={{
+              fontSize: "11px",
+              fontWeight: "bold",
+              color,
+              margin: "0 0 10px 0",
+              textTransform: "uppercase",
+              letterSpacing: "0.3px",
+            }}
+          >
+            Professional Experience
+          </h3>
+          {defaultExperiences.map((exp, i) => (
+            <div key={i} style={{ marginBottom: "15px", pageBreakInside: "avoid" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  marginBottom: "4px",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase" }}>
+                    {exp.title}
                   </div>
-                  <p className="text-sm italic">{exp.company} / {exp.location}</p>
-                  {exp.description && <p className="text-sm mt-1">{exp.description}</p>}
+                  <div style={{ fontSize: "10px", color: "#666" }}>
+                    {exp.company} – {exp.location} – {exp.years}
+                  </div>
                 </div>
-              ))}
-            </SectionMain>
-          )}
-
-          {/* Projects */}
-          {projects.length > 0 && (
-            <SectionMain title="Projects" color={color}>
-              {projects.map((proj, i) => (
-                <div key={i} className="mb-4">
-                  <p className="font-bold text-sm uppercase">{proj.name}</p>
-                  <p className="text-xs text-gray-500">{proj.from} - {proj.to}</p>
-                  {proj.description && <p className="text-sm mt-1">{proj.description}</p>}
-                  {proj.link && (
-                    <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color }}>
-                      {proj.link}
-                    </a>
-                  )}
-                </div>
-              ))}
-            </SectionMain>
-          )}
-        </main>
+              </div>
+              <p style={{ fontSize: "10px", marginBottom: "6px", lineHeight: "1.3" }}>
+                {exp.description}
+              </p>
+              {exp.bullets && (
+                <ul style={{ listStyle: "disc", paddingLeft: "15px", margin: "4px 0 0 0" }}>
+                  {exp.bullets.map((bullet, j) => (
+                    <li key={j} style={{ fontSize: "10px", marginBottom: "2px", lineHeight: "1.2" }}>
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-/* Reusable Components for Sidebar (Dark) */
-function SectionSidebar({ title, color, children }) {
-  return (
-    <div className="mb-6">
-      <h3 className="text-sm font-bold uppercase mb-3 flex items-center gap-2" style={{ color }}>
-        <div className="w-4 h-4 rounded-full border-2 border-current"></div> {title}
-      </h3>
-      <div className="text-xs space-y-2">{children}</div>
-    </div>
-  );
-}
-
-function ItemSidebar({ icon, text }) {
-  return (
-    <p className="flex items-center gap-2 text-xs mb-1">
-      {icon} {text}
-    </p>
-  );
-}
-
-/* Reusable Components for Main (Light) */
-function SectionMain({ title, color, children }) {
-  return (
-    <div className="mb-6">
-      <h3 className="text-sm font-bold uppercase mb-3 flex items-center gap-2" style={{ color }}>
-        <div className="w-4 h-4 rounded-full border-2 border-current"></div> {title}
-      </h3>
-      <div className="text-sm space-y-3">{children}</div>
-    </div>
-  );
+function shadeColor(hex, percent) {
+  if (!hex) return hex;
+  const f = hex.slice(1), t = percent < 0 ? 0 : 255, p = Math.abs(percent);
+  const R = parseInt(f.substring(0, 2), 16),
+    G = parseInt(f.substring(2, 4), 16),
+    B = parseInt(f.substring(4, 6), 16);
+  const newR = Math.round((t - R) * p) + R;
+  const newG = Math.round((t - G) * p) + G;
+  const newB = Math.round((t - B) * p) + B;
+  return "#" + ((1 << 24) + (newR << 16) + (newG << 8) + newB).toString(16).slice(1);
 }

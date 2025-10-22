@@ -69,7 +69,7 @@ export default function ModernTemplate({ data, color = "#2563eb" }) {
                     </div>
                   </div>
                   <div className="text-xs italic" style={{ fontSize: "11.5px" }}>
-                    {exp.from} — {exp.to || "Present"}
+                    {exp.from} - {exp.to || "Present"}
                   </div>
                 </div>
                 {exp.description && (
@@ -94,7 +94,7 @@ export default function ModernTemplate({ data, color = "#2563eb" }) {
                   {edu.institution}
                 </div>
                 <div className="text-xs italic" style={{ fontSize: "11.5px" }}>
-                  {edu.from} — {edu.to || "Present"} {edu.grade && `· Grade: ${edu.grade}`}
+                  {edu.from} - {edu.to || "Present"} {edu.grade && `· Grade: ${edu.grade}`}
                 </div>
               </div>
             ))}
@@ -140,7 +140,7 @@ export default function ModernTemplate({ data, color = "#2563eb" }) {
               {skills.map((skill, i) => (
                 <span
                   key={i}
-                  className="bg-gray-200 px-1.5 py-0.5 rounded text-xs"
+                  className="bg-gray-200 px-1.5 py-0.5 rounded text-xs whitespace-nowrap"
                   style={{ fontSize: "11.5px" }}
                 >
                   {skill}
@@ -174,7 +174,7 @@ export default function ModernTemplate({ data, color = "#2563eb" }) {
                 return (
                   <span
                     key={i}
-                    className="bg-gray-200 px-1.5 py-0.5 rounded text-xs"
+                    className="bg-gray-200 px-1.5 py-0.5 rounded text-xs whitespace-nowrap"
                     style={{ fontSize: "11.5px" }}
                   >
                     {hobbyName}

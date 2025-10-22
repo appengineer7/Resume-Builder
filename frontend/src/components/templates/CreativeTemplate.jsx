@@ -76,7 +76,7 @@ export default function CreativeTemplate({ data, color = "#2563eb", font = "Inte
                     <div className="text-gray-700 text-[12px]">{exp.company}</div>
                   </div>
                   <div className="italic text-[11px]">
-                    {exp.from} – {exp.to || "Present"}
+                    {exp.from} - {exp.to || "Present"}
                   </div>
                 </div>
                 {exp.description && (
@@ -98,7 +98,7 @@ export default function CreativeTemplate({ data, color = "#2563eb", font = "Inte
                   {edu.degree} - {edu.institution}
                 </div>
                 <div className="italic text-[11px]">
-                  {edu.from} – {edu.to || "Present"}{" "}
+                  {edu.from} - {edu.to || "Present"}{" "}
                   {edu.grade && `· Grade: ${edu.grade}`}
                 </div>
               </ItemBlock>

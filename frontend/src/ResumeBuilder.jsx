@@ -1,8 +1,8 @@
-
 // src/ResumeBuilder.jsx
 import React, { useState, useRef, useEffect, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify"; // Added for notifications
 import {
   Upload,
   Briefcase,
@@ -24,6 +24,7 @@ import {
 import domToImage from "dom-to-image";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
+import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
 
 import ClassicTemplate from "./components/templates/ClassicTemplate";
 import ModernTemplate from "./components/templates/ModernTemplate";
@@ -75,6 +76,17 @@ import modern_visual from "./assets/images/template-image/modern-visual.png";
 import unique_designer from "./assets/images/template-image/unique-designer.png";
 import morderblue_resume from "./assets/images/template-image/morden_blue.png";
 
+// Toast notification configuration
+const toastConfig = {
+  position: "top-right",
+  autoClose: 3000,
+  hideProgressBar: false,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  theme: "colored",
+};
+
 // Print-friendly wrapper component
 const PrintResumeWrapper = forwardRef(({ data, color, font, template }, ref) => {
   const TemplateComponent = {
@@ -97,9 +109,6 @@ const PrintResumeWrapper = forwardRef(({ data, color, font, template }, ref) => 
     UniqueDesignerResume: UniqueDesignerResume,
     MordenBlueResume: ModernBlueResume,
     "new-temp": New_temp,
-
-    
-    
   }[template] || ClassicTemplate;
 
   return (
@@ -119,7 +128,7 @@ export default function ResumeBuilder() {
   const [selectedFont, setSelectedFont] = useState("Arial");
   const [previewMode, setPreviewMode] = useState("fit"); // "fit", "full", "print"
   const [isPrinting, setIsPrinting] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false); // Shared for image and PDF
+  const [isDownloading, setIsDownloading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const templatesPerPage = 8;
 
@@ -150,9 +159,19 @@ export default function ResumeBuilder() {
   }, [selectedFont]);
 
   const [data, setData] = useState(resumeData);
-
   const previewRef = useRef(null);
   const printRef = useRef(null);
+
+  // Automatically redirect to Upload / Info if Preview & Customize is accessed with empty data
+  useEffect(() => {
+    if (step === steps.length - 1 && isDataEmpty()) {
+      toast.error(
+        "Please fill in your resume details before previewing.",
+        toastConfig
+      );
+      setStep(0);
+    }
+  }, [step, data]);
 
   const handleParsedResume = (parsedData) => {
     setData((prev) => ({
@@ -199,7 +218,6 @@ export default function ResumeBuilder() {
 
     setIsDownloading(true);
     try {
-      // Wait for fonts and images to load
       await document.fonts.ready;
       const node = previewRef.current;
       const images = node.querySelectorAll("img");
@@ -216,7 +234,6 @@ export default function ResumeBuilder() {
         )
       );
 
-      // Temporarily apply A4 styles
       const originalStyle = node.style.cssText;
       node.style.width = "210mm";
       node.style.height = "297mm";
@@ -229,14 +246,13 @@ export default function ResumeBuilder() {
       node.style.boxShadow = "none";
       node.style.background = "#ffffff";
 
-      // Capture the image
       const scale = 2;
       const dataUrl = await domToImage.toPng(node, {
         width: 794 * scale,
         height: 1123 * scale,
         style: {
           transform: `scale(${scale})`,
-          transformOrigin: 'top left',
+          transformOrigin: "top left",
           width: `${794}px`,
           height: `${1123}px`,
         },
@@ -248,7 +264,7 @@ export default function ResumeBuilder() {
       saveAs(blob, `${data.personal.fullName || "resume"}.png`);
     } catch (error) {
       console.error("Error generating image:", error);
-      alert("Failed to download image. Please try again.");
+      toast.error("Failed to download image. Please try again.", toastConfig);
     } finally {
       setIsDownloading(false);
     }
@@ -260,7 +276,6 @@ export default function ResumeBuilder() {
 
     setIsDownloading(true);
     try {
-
       await document.fonts.ready;
       const node = previewRef.current;
       const images = node.querySelectorAll("img");
@@ -290,22 +305,20 @@ export default function ResumeBuilder() {
       node.style.background = "#ffffff";
 
       const scale = 3;
-        const dataUrl = await domToImage.toPng(node, {
-          width: 794 * scale,
-          height: 1123 * scale,
-          style: {
-            transform: `scale(${scale})`,
-            transformOrigin: 'top left',
-            width: `794px`,
-            height: `1123px`,
-          },
-          bgcolor: "#ffffff",
-        });
+      const dataUrl = await domToImage.toPng(node, {
+        width: 794 * scale,
+        height: 1123 * scale,
+        style: {
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+          width: `794px`,
+          height: `1123px`,
+        },
+        bgcolor: "#ffffff",
+      });
 
-      // Restore original styles
       node.style.cssText = originalStyle;
 
-      // Create PDF
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
@@ -315,7 +328,7 @@ export default function ResumeBuilder() {
       pdf.save(`${data.personal.fullName || "resume"}.pdf`);
     } catch (error) {
       console.error("Error generating PDF:", error);
-      alert("Failed to download PDF. Please try again.");
+      toast.error("Failed to download PDF. Please try again.", toastConfig);
     } finally {
       setIsDownloading(false);
     }
@@ -357,7 +370,7 @@ export default function ResumeBuilder() {
       img: unique_designer,
     },
     { id: "MordenBlueResume", label: "Morden Blue Resume", img: morderblue_resume },
-    // { id: "new-temp", label: "New Template", img: pro_two_col_Img },
+    { id: "new-temp", label: "New Template", img: pro_two_col_Img },
   ];
 
   // Pagination logic
@@ -378,6 +391,32 @@ export default function ResumeBuilder() {
 
   const goToNextPage = () => {
     setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+  };
+
+  const isDataEmpty = () => {
+    const { personal, experiences, education, projects, skills, certifications } = data;
+    return (
+      !personal?.fullName &&
+      !personal?.email &&
+      !personal?.phone &&
+      experiences?.length === 0 &&
+      education?.length === 0 &&
+      projects?.length === 0 &&
+      skills?.length === 0 &&
+      certifications?.length === 0
+    );
+  };
+
+  const handleNextStep = () => {
+    if (step === steps.length - 2 && isDataEmpty()) {
+      toast.error(
+        "Please fill in at least some resume details before previewing.",
+        toastConfig
+      );
+      setStep(0);
+      return;
+    }
+    setStep((prev) => Math.min(prev + 1, steps.length - 1));
   };
 
   const getPreviewStyles = () => {
@@ -706,375 +745,393 @@ export default function ResumeBuilder() {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-7xl mx-auto space-y-8 no-print"
         >
-          <motion.div
-            className="text-center space-y-2 no-print"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Live Preview & Customization
-            </h3>
-            <p className="text-gray-600">
-              See your resume come to life and make it uniquely yours
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="flex justify-center gap-2 flex-wrap no-print"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                previewMode === "fit"
-                  ? "bg-purple-600 text-white shadow-lg"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-              }`}
-              onClick={() => setPreviewMode("fit")}
-            >
-              <Maximize2 size={16} />
-              Fit to Screen
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                previewMode === "full"
-                  ? "bg-purple-600 text-white shadow-lg"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-              }`}
-              onClick={() => setPreviewMode("full")}
-            >
-              <Maximize2 size={16} />
-              Full Size
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isPrinting || isDownloading}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                previewMode === "print" || isPrinting
-                  ? "bg-purple-600 text-white shadow-lg"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-              }`}
-              onClick={handlePrint}
-            >
-              {isPrinting ? "Preparing..." : "Print Preview"}
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isDownloading}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                isDownloading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-              }`}
-              onClick={handleDownloadImage}
-            >
-              <Save size={16} />
-              {isDownloading ? "Please wait..." : "Save as PNG"}
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isDownloading}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                isDownloading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-              }`}
-              onClick={handleDownloadPDF}
-            >
-              <Download size={16} />
-              {isDownloading ? "Generating..." : "Save as PDF"}
-            </motion.button>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-            <motion.div
-              className="md:col-span-1 xl:col-span-2 space-y-6 no-print"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <div
-                className={`bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-white/20 relative ${
-                  previewMode === "full" ? "fixed inset-0 z-50 bg-white/95" : ""
-                }`}
+          {isDataEmpty() ? (
+            <div className="text-center space-y-4">
+              <h3 className="text-2xl font-bold text-gray-800">
+                No Resume Data Available
+              </h3>
+              <p className="text-gray-600">
+                You’ve been redirected to the start because no resume details were found. Please fill in your information to continue.
+              </p>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl shadow-lg hover:shadow-xl font-semibold transition-all duration-300"
+                onClick={() => setStep(0)}
               >
-                {previewMode === "full" && (
-                  <motion.button
-                    className="absolute top-4 right-4 z-10 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300 no-print"
-                    onClick={() => setPreviewMode("fit")}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Minimize2 size={20} />
-                  </motion.button>
-                )}
-                <div className="flex items-center justify-between mb-4 flex-wrap gap-2 no-print">
-                  <h4 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <Eye className="text-purple-600" size={20} />
-                    {previewMode === "full" ? "Full Screen Preview" : "Live Preview"}
-                  </h4>
-                  <div className="text-sm text-gray-500">
-                    {previewMode === "full" ? "Full Size" : "Fit View"} • A4 Format
-                  </div>
-                </div>
-
-                <div
-                  ref={previewRef}
-                  className={`resume-capture transition-all duration-300 ${
-                    previewMode === "full" ? "w-full h-full" : "border border-gray-200 rounded-xl"
-                  }`}
-                  style={getPreviewStyles()}
-                >
-                  {renderResumeTemplate(null)}
-                </div>
-              </div>
+                Start Filling Details
+              </motion.button>
+            </div>
+          ) : (
+            <>
+              <motion.div
+                className="text-center space-y-2 no-print"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Live Preview & Customization
+                </h3>
+                <p className="text-gray-600">
+                  See your resume come to life and make it uniquely yours
+                </p>
+              </motion.div>
 
               <motion.div
-                className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-white/20 no-print"
+                className="flex justify-center gap-2 flex-wrap no-print"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.1 }}
               >
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                      <Sparkles size={20} className="text-white" />
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+                    previewMode === "fit"
+                      ? "bg-purple-600 text-white shadow-lg"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setPreviewMode("fit")}
+                >
+                  <Maximize2 size={16} />
+                  Fit to Screen
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+                    previewMode === "full"
+                      ? "bg-purple-600 text-white shadow-lg"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setPreviewMode("full")}
+                >
+                  <Maximize2 size={16} />
+                  Full Size
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={isPrinting || isDownloading}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+                    previewMode === "print" || isPrinting
+                      ? "bg-purple-600 text-white shadow-lg"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                  onClick={handlePrint}
+                >
+                  {isPrinting ? "Preparing..." : "Print Preview"}
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={isDownloading}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+                    isDownloading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                  onClick={handleDownloadImage}
+                >
+                  <Save size={16} />
+                  {isDownloading ? "Please wait..." : "Save as PNG"}
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  disabled={isDownloading}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+                    isDownloading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                  onClick={handleDownloadPDF}
+                >
+                  <Download size={16} />
+                  {isDownloading ? "Generating..." : "Save as PDF"}
+                </motion.button>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                <motion.div
+                  className="md:col-span-1 xl:col-span-2 space-y-6 no-print"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <div
+                    className={`bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-white/20 relative ${
+                      previewMode === "full" ? "fixed inset-0 z-50 bg-white/95" : ""
+                    }`}
+                  >
+                    {previewMode === "full" && (
+                      <motion.button
+                        className="absolute top-4 right-4 z-10 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-all duration-300 no-print"
+                        onClick={() => setPreviewMode("fit")}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Minimize2 size={20} />
+                      </motion.button>
+                    )}
+                    <div className="flex items-center justify-between mb-4 flex-wrap gap-2 no-print">
+                      <h4 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <Eye className="text-purple-600" size={20} />
+                        {previewMode === "full" ? "Full Screen Preview" : "Live Preview"}
+                      </h4>
+                      <div className="text-sm text-gray-500">
+                        {previewMode === "full" ? "Full Size" : "Fit View"} • A4 Format
+                      </div>
                     </div>
-                    <div>
-                      <h5 className="font-semibold text-gray-800">
-                        {templatesConfig.find((t) => t.id === template)?.label}
-                      </h5>
-                      <p className="text-sm text-gray-600">
-                        Template selected • {data.personal.fullName || "Your Name"}
-                      </p>
+
+                    <div
+                      ref={previewRef}
+                      className={`resume-capture transition-all duration-300 ${
+                        previewMode === "full" ? "w-full h-full" : "border border-gray-200 rounded-xl"
+                      }`}
+                      style={getPreviewStyles()}
+                    >
+                      {renderResumeTemplate(null)}
                     </div>
                   </div>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg transition-all duration-300"
-                    onClick={() => setStep(6)}
-                  >
-                    Change Template
-                  </motion.button>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              className={`space-y-6 no-print ${previewMode === "full" ? "hidden md:block" : ""}`}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="sticky top-8 space-y-6">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20">
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2 mb-6">
-                    <Palette size={20} /> Personalize
-                  </h3>
 
                   <motion.div
+                    className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-white/20 no-print"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="space-y-3"
                   >
-                    <p className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                      🎨 Theme Color
-                    </p>
-                    <div className="flex gap-2 flex-wrap justify-center">
-                      {[
-                        { color: "#1f2937", label: "Dark Gray" },
-                        { color: "#4b5563", label: "Gray" },
-                        { color: "#6b7280", label: "Light Gray" },
-                        { color: "#2563eb", label: "Blue" },
-                        { color: "#1d4ed8", label: "Dark Blue" },
-                        { color: "#0ea5e9", label: "Cyan" },
-                        { color: "#14b8a6", label: "Teal" },
-                        { color: "#059669", label: "Dark Green" },
-                        { color: "#10b981", label: "Green" },
-                        { color: "#f97316", label: "Orange" },
-                        { color: "#d97706", label: "Amber" },
-                        { color: "#9333ea", label: "Purple" },
-                        { color: "#8b5cf6", label: "Light Purple" },
-                        { color: "#ef4444", label: "Red" },
-                        { color: "#b91c1c", label: "Dark Red" },
-                      ].map((clr) => (
-                        <motion.button
-                          key={clr.color}
-                          whileHover={{ scale: 1.15, rotate: 5 }}
-                          whileTap={{ scale: 0.9 }}
-                          className={`relative w-10 h-10 rounded-full border-3 shadow-lg overflow-hidden transition-all duration-300 ${
-                            selectedColor === clr.color
-                              ? "border-purple-500 ring-4 ring-purple-200/50 scale-110 shadow-purple-500/25"
-                              : "border-gray-300 hover:border-purple-400 hover:scale-105"
-                          }`}
-                          style={{ backgroundColor: clr.color }}
-                          onClick={() => setSelectedColor(clr.color)}
-                          title={clr.label}
-                        >
-                          {selectedColor === clr.color && (
-                            <motion.div
-                              className="absolute inset-0 bg-white/20 rounded-full flex items-center justify-center"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 300 }}
-                            >
-                              <Sparkles size={12} className="text-white" />
-                            </motion.div>
-                          )}
-                          <span className="sr-only">{clr.label}</span>
-                        </motion.button>
-                      ))}
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                          <Sparkles size={20} className="text-white" />
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-gray-800">
+                            {templatesConfig.find((t) => t.id === template)?.label}
+                          </h5>
+                          <p className="text-sm text-gray-600">
+                            Template selected • {data.personal.fullName || "Your Name"}
+                          </p>
+                        </div>
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-semibold hover:shadow-lg transition-all duration-300"
+                        onClick={() => setStep(6)}
+                      >
+                        Change Template
+                      </motion.button>
                     </div>
                   </motion.div>
+                </motion.div>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="space-y-3"
-                  >
-                    <p className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                      <Type size={16} className="text-purple-600" /> Font Style
-                    </p>
-                    <select
-                      className="w-full border-2 border-gray-200 rounded-xl p-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200/50 transition-all duration-300 bg-white/50 backdrop-blur-sm appearance-none cursor-pointer"
-                      value={selectedFont}
-                      onChange={(e) => setSelectedFont(e.target.value)}
-                    >
-                      {[
+                <motion.div
+                  className={`space-y-6 no-print ${previewMode === "full" ? "hidden md:block" : ""}`}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <div className="sticky top-8 space-y-6">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-white/20">
+                      <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2 mb-6">
+                        <Palette size={20} /> Personalize
+                      </h3>
 
-                        { value: "Arial", label: "Arial (Simple & ATS-friendly)" },
-                        { value: "Inter", label: "Inter (Modern)" },
-                        { value: "Roboto", label: "Roboto (Clean)" },
-                        { value: "Poppins", label: "Poppins (Geometric)" },
-                        { value: "Merriweather", label: "Merriweather (Serif)" },
-                        { value: "Lato", label: "Lato (Professional)" },
-                        { value: "Open Sans", label: "Open Sans (Readable)" },
-                        { value: "Montserrat", label: "Montserrat (Bold)" },
-                        { value: "Raleway", label: "Raleway (Light)" },
-                        { value: "Oswald", label: "Oswald (Display)" },
-                        { value: "Source Sans Pro", label: "Source Sans Pro (Versatile)" },
-                        { value: "Calibri", label: "Calibri (Modern & Readable)" },
-                        { value: "Helvetica", label: "Helvetica (Clean & Professional)" },
-                        { value: "Verdana", label: "Verdana (Clear & Legible)" },
-                        { value: "Tahoma", label: "Tahoma (Readable & Standard)" },
-                        { value: "Georgia", label: "Georgia (Serif, Professional)" },
-                        { value: "Times New Roman", label: "Times New Roman (Classic ATS-safe)" },
-                        { value: "Trebuchet MS", label: "Trebuchet MS (Professional & Clean)" },
-                        { value: "Cambria", label: "Cambria (Readable & Professional)" },
-                        { value: "Garamond", label: "Garamond (Elegant & ATS-safe)" }
-                      ]
-                      .map((font) => (
-                        <option key={font.value} value={font.value}>
-                          {font.label}
-                        </option>
-                      ))}
-                    </select>
-                  </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="space-y-3"
+                      >
+                        <p className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                          🎨 Theme Color
+                        </p>
+                        <div className="flex gap-2 flex-wrap justify-center">
+                          {[
+                            { color: "#1f2937", label: "Dark Gray" },
+                            { color: "#4b5563", label: "Gray" },
+                            { color: "#6b7280", label: "Light Gray" },
+                            { color: "#2563eb", label: "Blue" },
+                            { color: "#1d4ed8", label: "Dark Blue" },
+                            { color: "#0ea5e9", label: "Cyan" },
+                            { color: "#14b8a6", label: "Teal" },
+                            { color: "#059669", label: "Dark Green" },
+                            { color: "#10b981", label: "Green" },
+                            { color: "#f97316", label: "Orange" },
+                            { color: "#d97706", label: "Amber" },
+                            { color: "#9333ea", label: "Purple" },
+                            { color: "#8b5cf6", label: "Light Purple" },
+                            { color: "#ef4444", label: "Red" },
+                            { color: "#b91c1c", label: "Dark Red" },
+                          ].map((clr) => (
+                            <motion.button
+                              key={clr.color}
+                              whileHover={{ scale: 1.15, rotate: 5 }}
+                              whileTap={{ scale: 0.9 }}
+                              className={`relative w-10 h-10 rounded-full border-3 shadow-lg overflow-hidden transition-all duration-300 ${
+                                selectedColor === clr.color
+                                  ? "border-purple-500 ring-4 ring-purple-200/50 scale-110 shadow-purple-500/25"
+                                  : "border-gray-300 hover:border-purple-400 hover:scale-105"
+                              }`}
+                              style={{ backgroundColor: clr.color }}
+                              onClick={() => setSelectedColor(clr.color)}
+                              title={clr.label}
+                            >
+                              {selectedColor === clr.color && (
+                                <motion.div
+                                  className="absolute inset-0 bg-white/20 rounded-full flex items-center justify-center"
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                  <Sparkles size={12} className="text-white" />
+                                </motion.div>
+                              )}
+                              <span className="sr-only">{clr.label}</span>
+                            </motion.button>
+                          ))}
+                        </div>
+                      </motion.div>
 
-                  <motion.div
-                    className="space-y-3 pt-4 no-print"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                  >
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="space-y-3"
+                      >
+                        <p className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                          <Type size={16} className="text-purple-600" /> Font Style
+                        </p>
+                        <select
+                          className="w-full border-2 border-gray-200 rounded-xl p-3 text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200/50 transition-all duration-300 bg-white/50 backdrop-blur-sm appearance-none cursor-pointer"
+                          value={selectedFont}
+                          onChange={(e) => setSelectedFont(e.target.value)}
+                        >
+                          {[
+                            { value: "Arial", label: "Arial (Simple & ATS-friendly)" },
+                            { value: "Inter", label: "Inter (Modern)" },
+                            { value: "Roboto", label: "Roboto (Clean)" },
+                            { value: "Poppins", label: "Poppins (Geometric)" },
+                            { value: "Merriweather", label: "Merriweather (Serif)" },
+                            { value: "Lato", label: "Lato (Professional)" },
+                            { value: "Open Sans", label: "Open Sans (Readable)" },
+                            { value: "Montserrat", label: "Montserrat (Bold)" },
+                            { value: "Raleway", label: "Raleway (Light)" },
+                            { value: "Oswald", label: "Oswald (Display)" },
+                            { value: "Source Sans Pro", label: "Source Sans Pro (Versatile)" },
+                            { value: "Calibri", label: "Calibri (Modern & Readable)" },
+                            { value: "Helvetica", label: "Helvetica (Clean & Professional)" },
+                            { value: "Verdana", label: "Verdana (Clear & Legible)" },
+                            { value: "Tahoma", label: "Tahoma (Readable & Standard)" },
+                            { value: "Georgia", label: "Georgia (Serif, Professional)" },
+                            { value: "Times New Roman", label: "Times New Roman (Classic ATS-safe)" },
+                            { value: "Trebuchet MS", label: "Trebuchet MS (Professional & Clean)" },
+                            { value: "Cambria", label: "Cambria (Readable & Professional)" },
+                            { value: "Garamond", label: "Garamond (Elegant & ATS-safe)" }
+                          ].map((font) => (
+                            <option key={font.value} value={font.value}>
+                              {font.label}
+                            </option>
+                          ))}
+                        </select>
+                      </motion.div>
 
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      disabled={isDownloading}
-                      className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                        isDownloading
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-xl hover:shadow-2xl"
-                      }`}
-                      onClick={handleDownloadPDF}
-                    >
-                      {isDownloading ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Generating PDF...
-                        </>
-                      ) : (
-                        <>
-                          <Download size={18} />
-                          Save as PDF
-                        </>
-                      )}
-                    </motion.button>
+                      <motion.div
+                        className="space-y-3 pt-4 no-print"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <motion.button
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                          disabled={isDownloading}
+                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
+                            isDownloading
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-xl hover:shadow-2xl"
+                          }`}
+                          onClick={handleDownloadPDF}
+                        >
+                          {isDownloading ? (
+                            <>
+                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Generating PDF...
+                            </>
+                          ) : (
+                            <>
+                              <Download size={18} />
+                              Save as PDF
+                            </>
+                          )}
+                        </motion.button>
 
-                     <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      disabled={isDownloading}
-                      className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                        isDownloading
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-xl hover:shadow-2xl"
-                      }`}
-                      onClick={handleDownloadImage}
-                    >
-                      {isDownloading ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Please wait...
-                        </>
-                      ) : (
-                        <>
-                          <Save size={18} />
-                          Save as PNG
-                        </>
-                      )}
-                    </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                          disabled={isDownloading}
+                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
+                            isDownloading
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-xl hover:shadow-2xl"
+                          }`}
+                          onClick={handleDownloadImage}
+                        >
+                          {isDownloading ? (
+                            <>
+                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Please wait...
+                            </>
+                          ) : (
+                            <>
+                              <Save size={18} />
+                              Save as PNG
+                            </>
+                          )}
+                        </motion.button>
 
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      disabled={isPrinting || isDownloading}
-                      className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                        isPrinting || isDownloading
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl hover:shadow-2xl"
-                      }`}
-                      onClick={handlePrint}
-                    >
-                      {isPrinting ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Preparing Print...
-                        </>
-                      ) : (
-                        <>
-                          <Printer size={18} />
-                          Print Resume
-                        </>
-                      )}
-                    </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                          disabled={isPrinting || isDownloading}
+                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
+                            isPrinting || isDownloading
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl hover:shadow-2xl"
+                          }`}
+                          onClick={handlePrint}
+                        >
+                          {isPrinting ? (
+                            <>
+                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Preparing Print...
+                            </>
+                          ) : (
+                            <>
+                              <Printer size={18} />
+                              Print Resume
+                            </>
+                          )}
+                        </motion.button>
 
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2"
-                      onClick={() => setStep(step - 1)}
-                      disabled={isPrinting || isDownloading}
-                    >
-                      <ChevronLeft size={18} />
-                      Go Back
-                    </motion.button>
-                  </motion.div>
-                </div>
+                        <motion.button
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2"
+                          onClick={() => setStep(step - 1)}
+                          disabled={isPrinting || isDownloading}
+                        >
+                          <ChevronLeft size={18} />
+                          Go Back
+                        </motion.button>
+                      </motion.div>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
-            </motion.div>
-          </div>
+            </>
+          )}
         </motion.div>
       ),
     },
@@ -1150,11 +1207,23 @@ export default function ResumeBuilder() {
                       ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-xl"
                       : i < step
                       ? "bg-emerald-500/80 text-white shadow-lg"
+                      : i === steps.length - 1 && isDataEmpty()
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                       : "bg-white/60 backdrop-blur-sm text-gray-500 border-2 border-gray-300 shadow-md"
                   }`}
-                  onClick={() => setStep(i)}
+                  onClick={() => {
+                    if (i === steps.length - 1 && isDataEmpty()) {
+                      toast.error(
+                        "Please fill in some resume details before previewing.",
+                        toastConfig
+                      );
+                      setStep(0);
+                      return;
+                    }
+                    setStep(i);
+                  }}
                   aria-label={`Go to ${s.label} step`}
-                  disabled={isPrinting || isDownloading}
+                  disabled={isPrinting || isDownloading || (i === steps.length - 1 && isDataEmpty())}
                 >
                   {i === step && !isPrinting && !isDownloading && (
                     <motion.div
@@ -1171,6 +1240,8 @@ export default function ResumeBuilder() {
                       ? "text-purple-600"
                       : i < step
                       ? "text-emerald-600"
+                      : i === steps.length - 1 && isDataEmpty()
+                      ? "text-gray-400"
                       : "text-gray-500"
                   }`}
                 >
@@ -1216,8 +1287,12 @@ export default function ResumeBuilder() {
                 whileHover={{ scale: 1.05, x: 5 }}
                 whileTap={{ scale: 0.95 }}
                 disabled={isPrinting || isDownloading}
-                className="sm:ml-auto flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl shadow-xl hover:shadow-2xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => setStep(step + 1)}
+                className={`sm:ml-auto flex items-center gap-2 px-8 py-3 rounded-xl shadow-xl font-semibold transition-all duration-300 ${
+                  isPrinting || isDownloading
+                    ? "bg-gray-400 text-white cursor-not-allowed"
+                    : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-2xl"
+                }`}
+                onClick={handleNextStep}
               >
                 Next
                 <ChevronRight size={18} />
@@ -1440,8 +1515,8 @@ export default function ResumeBuilder() {
             position: static !important;
             page-break-inside: avoid;
             page-break-after: avoid !important;
-            margin: 1 !important;
-            padding: 2 !important;
+            margin: 0 !important;
+            padding: 0 !important;
             box-sizing: border-box !important;
           }
 

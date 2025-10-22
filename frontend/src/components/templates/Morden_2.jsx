@@ -116,7 +116,7 @@ export default function TrendyResumeTemplate({ data, color = "#4f46e5", font = "
                 <div className="flex justify-between items-center">
                   <p className="font-semibold">{exp.title}</p>
                   <p className="text-xs italic">
-                    {exp.from} – {exp.to || "Present"}
+                    {exp.from} - {exp.to || "Present"}
                   </p>
                 </div>
                 <p className="text-gray-600 text-xs">{exp.company}</p>
@@ -143,10 +143,10 @@ export default function TrendyResumeTemplate({ data, color = "#4f46e5", font = "
                 style={{ borderColor: color }}
               >
                 <p className="font-semibold">
-                  {edu.degree} – {edu.institution}
+                  {edu.degree} - {edu.institution}
                 </p>
                 <p className="text-xs italic">
-                  {edu.from} – {edu.to || "Present"}{" "}
+                  {edu.from} - {edu.to || "Present"}{" "}
                   {edu.grade && `· Grade: ${edu.grade}`}
                 </p>
               </div>

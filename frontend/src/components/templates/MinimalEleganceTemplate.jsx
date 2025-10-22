@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Mail, Phone, MapPin } from "lucide-react";
 export default function MinimalEleganceModern({ data, color = "#2563eb", font = "Inter" }) {
   const {
     personal = {},
@@ -14,11 +14,11 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
     <div
       className="bg-white shadow-lg mx-auto"
       style={{
-        width: "210mm", 
+        width: "210mm",
         height: "297mm",
-        padding: "0px", 
+        padding: "0px",
         fontFamily: `${font}, Arial, sans-serif`,
-        fontSize: "11px", 
+        fontSize: "11px",
         lineHeight: "1.35",
         boxSizing: "border-box",
         overflow: "hidden",
@@ -40,10 +40,10 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
           )}
         </div>
 
-        <h1 className="text-2xl font-bold  leading-tight" 
-        style={{
-          color: color
-        }}>
+        <h1 className="text-2xl font-bold  leading-tight"
+          style={{
+            color: color
+          }}>
           {personal.fullName || "Full Name"}
         </h1>
         <p className="text-gray-500 italic text-xs">{personal.title || "Job Title"}</p>
@@ -51,17 +51,20 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
         <div className="flex flex-wrap justify-center gap-4 mt-2 text-gray-600 text-xs">
           {personal.email && (
             <p className="flex items-center gap-1">
-             {personal.email}
+              <Mail className="w-3 h-3" />
+              {personal.email}
             </p>
           )}
           {personal.phone && (
             <p className="flex items-center gap-1">
-               {personal.phone}
+              <Phone className="w-3 h-3" />
+              {personal.phone}
             </p>
           )}
           {personal.location && (
             <p className="flex items-center gap-1">
-             {personal.location}
+              <MapPin className="w-3 h-3" />
+              {personal.location}
             </p>
           )}
         </div>
@@ -101,7 +104,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
       {experiences.length > 0 && (
         <div className="p-3">
           <h2 className="text-base font-semibold flex items-center gap-1 mb-1.5" style={{ color }}>
-           Experience
+            Experience
           </h2>
           <div className="space-y-1.5">
             {experiences.map((exp, idx) => (
@@ -113,7 +116,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">{exp.title || "Job Title"}</span>
                   <span className="italic text-[10px] text-gray-500">
-                    {exp.from || "Start"} – {exp.to || "Present"}
+                    {exp.from || "Start"} - {exp.to || "Present"}
                   </span>
                 </div>
                 <p className="text-gray-600 text-[10px]">{exp.company || "Company"}</p>
@@ -143,7 +146,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
                   {edu.degree || "Degree"} - {edu.institution || "Institution"}
                 </p>
                 <span className="italic text-[10px] text-gray-500">
-                  {edu.from || "Start"} – {edu.to || "Present"}
+                  {edu.from || "Start"} - {edu.to || "Present"}
                 </span>
               </div>
             ))}
@@ -155,7 +158,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
       {projects.length > 0 && (
         <div className="p-3">
           <h2 className="text-base font-semibold flex items-center gap-1 mb-1.5" style={{ color }}>
-             Projects
+            Projects
           </h2>
           <div className="grid gap-1.5">
             {projects.map((project, idx) => (
@@ -174,7 +177,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
       {certifications.length > 0 && (
         <div className="p-3">
           <h2 className="text-base font-semibold flex items-center gap-1 mb-1.5" style={{ color }}>
-             Certifications
+            Certifications
           </h2>
           <ul className="list-disc list-inside text-[10px] text-gray-700">
             {certifications.map((cert, idx) => (

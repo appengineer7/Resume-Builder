@@ -4,7 +4,9 @@ import { Button } from "../components/ui/button";
 import customIcon from "../assets/images/avatar-icons/customize.png";
 import designIcon from "../assets/images/avatar-icons/design.png";
 import atsIcon from "../assets/images/avatar-icons/ats1.png";
-import propic from "../assets/images/avatar-icons/propic.png";
+import propic from "../assets/images/avatar-icons/image.png";
+import propic1 from "../assets/images/avatar-icons/image-1.png";
+import propic2 from "../assets/images/avatar-icons/image-2.png";
 import {
   Card,
   CardContent,
@@ -13,7 +15,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Input } from "../components/ui/input";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
 
 // Forgot Password Modal Component
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
@@ -656,24 +658,24 @@ const Home = () => {
 
   const testimonials = [
     {
-      name: "Saad Anderson",
+      name: "Poul Anderson",
       role: "Software Engineer",
       content: "Landed my dream job at Google with the resume I created here. The templates are incredible!",
       avatar: propic,
       color: "from-purple-500 to-pink-500",
     },
     {
-      name: "Zaid Carter",
+      name: "John Carter",
       role: "Product Manager",
       content: "The customization options are endless. My resume now perfectly represents my personal brand.",
-      avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvAPk_5EtGQWrsQY5oiqJ0ez1cYL2UFjzspbf9B5Z01dUdrLYD_I8k22Oupw-W3G20qOY&usqp=CAU",
+      avatar: propic1,
       color: "from-emerald-500 to-teal-500",
     },
     {
-      name: "Faiz Morgan",
+      name: "Smith Morgan",
       role: "Marketing Director",
       content: "Went from 0 interviews to 5 offers in one month. This platform changed my career trajectory.",
-      avatar: "https://img.freepik.com/premium-photo/3d-illustration-cartoon-character-avatar-profile_1183071-136.jpg",
+      avatar: propic2,
       color: "from-blue-500 to-cyan-500",
     },
   ];
@@ -1397,14 +1399,13 @@ const Home = () => {
                 ResumeBuilder
               </div>
               <p className="text-gray-300 text-sm">
-                Built with ❤️ for job seekers everywhere. Helping you land your dream career.
+                Built by <a href="https://nexelix.tech/"><span className="font-semibold text-purple-400 hover:underline">Nexelix Tech</span></a> for job seekers everywhere. Helping you land your dream career.
               </p>
             </motion.div>
             {[
-              { title: "Product", links: ["Templates", "Builder", "Export", "AI Features"] },
-              { title: "Company", links: ["About", "Careers", "Press", "Contact"] },
-              { title: "Support", links: ["Help Center", "Tutorials", "Pricing", "Privacy"] },
-              { title: "Legal", links: ["Terms", "Privacy", "Cookies", "Security"] },
+              { title: "Product", links: ["Templates", "Builder"] },
+              { title: "Company", links: ["About", "Contact"] },
+              { title: "Support", links: ["Privacy"] },
             ].map((section, index) => (
               <motion.div
                 key={index}
@@ -1416,23 +1417,38 @@ const Home = () => {
                 <h4 className="font-bold text-gray-200 mb-4">{section.title}</h4>
                 <div className="space-y-2">
                   {section.links.map((link, linkIndex) => (
-                    <motion.a
-                      key={linkIndex}
-                      href="#"
-                      className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
-                      whileHover={{ x: 4 }}
-                    >
-                      {link}
-                    </motion.a>
+                    <motion.div key={linkIndex} whileHover={{ x: 2 }}>
+                      {section.title === "Product" ? (
+                        // ✅ Redirect "Templates" to /builder with state
+                        <button
+                          onClick={() =>
+                            link === "Templates"
+                              ? navigate("/builder", { state: { step: 6 } })
+                              : navigate(`/${link.toLowerCase()}`)
+                          }
+                          className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
+                        >
+                          {link}
+                        </button>
+                      ) : (
+                        <Link
+                          to={`/${link.toLowerCase()}`}
+                          className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
+                        >
+                          {link}
+                        </Link>
+                      )}
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>
             ))}
+
           </div>
           <div className="border-t border-white/10 mt-12 pt-8 text-center">
             <p className="text-gray-400 text-sm">
               © 2025 Resume Builder. All rights reserved.
-              <span className="ml-2 text-purple-400 hover:underline">Made with love</span>
+              <span className="ml-2 text-purple-400">Made by <a href="https://nexelix.tech/"><span className="hover:underline font-semibold text-purple-500">Nexelix Tech</span> </a></span>
             </p>
           </div>
         </div>

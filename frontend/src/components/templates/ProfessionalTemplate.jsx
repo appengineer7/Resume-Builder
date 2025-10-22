@@ -81,7 +81,7 @@ export default function ProfessionalTemplate({
                     <div className="text-xs text-gray-600">{exp.company}</div>
                   </div>
                   <div className="text-xs italic">
-                    {exp.from} – {exp.to || "Present"}
+                    {exp.from} - {exp.to || "Present"}
                   </div>
                 </div>
                 {exp.description && (
@@ -107,7 +107,7 @@ export default function ProfessionalTemplate({
                   {edu.degree} - {edu.institution}
                 </div>
                 <div className="text-xs italic">
-                  {edu.from} – {edu.to || "Present"}
+                  {edu.from} - {edu.to || "Present"}
                 </div>
               </div>
             ))}

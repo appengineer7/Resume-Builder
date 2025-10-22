@@ -1,7 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import ResumeBuilder from "./ResumeBuilder";
 import Home from "./pages/Home";
 import { useState, useEffect } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -57,6 +62,9 @@ export default function App() {
       <Routes>
         <Route path="/reset-password/:token" element={<Home />} />
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />}/>
+        <Route path="/contact" element={ <Contact />} />
+        <Route path="/privacy" element={ <Privacy />} />
         <Route
           path="/builder"
           element={
@@ -66,6 +74,15 @@ export default function App() {
           }
         />
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     </Router>
   );
 }

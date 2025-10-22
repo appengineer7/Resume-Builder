@@ -52,7 +52,7 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
                     <div className="text-xs" style={{ fontSize: "11.5px" }}>{exp.company}</div>
                   </div>
                   <div className="text-xs italic" style={{ fontSize: "11.5px" }}>
-                    {exp.from} — {exp.to || "Present"}
+                    {exp.from} - {exp.to || "Present"}
                   </div>
                 </div>
                 <div className="text-xs" style={{ fontSize: "11.5px" }}>{exp.description}</div>
@@ -106,7 +106,7 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
           <Section title="Skills" color={color}>
             <div className="flex flex-wrap gap-2">
               {skills.map((skill, i) => (
-                <span key={i} className="bg-gray-200 px-1.5 py-0.5 rounded text-xs" style={{ fontSize: "11.5px" }}>
+                <span key={i} className="bg-gray-200 px-1.5 py-0.5 rounded text-xs whitespace-nowrap" style={{ fontSize: "11.5px" }}>
                   {skill}
                 </span>
               ))}
@@ -132,7 +132,7 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
               {personal.hobbies.map((hobby, i) => {
                 const hobbyName = typeof hobby === "string" ? hobby : hobby.name;
                 return (
-                  <span key={i} className="bg-gray-200 px-1.5 py-0.5 rounded text-xs" style={{ fontSize: "11.5px" }}>
+                  <span key={i} className="bg-gray-200 px-1.5 py-0.5 rounded text-xs whitespace-nowrap" style={{ fontSize: "11.5px" }}>
                     {hobbyName}
                   </span>
                 );

@@ -22,6 +22,7 @@ export default function ExperienceForm({ experiences, onChange }) {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      
       <div className="flex justify-between items-center">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Experience</h3>
         <button
