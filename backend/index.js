@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import contactRouetes from "./routes/contactRoutes.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ connectDB();
 
 // ✅ Routes
 app.use("/api/auth", authRoutes);
+app.use("/api", contactRouetes);
 
 // ✅ Health check route (Optional, good for monitoring)
 app.get("/", (req, res) => {

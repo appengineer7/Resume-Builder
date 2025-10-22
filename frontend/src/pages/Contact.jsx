@@ -17,13 +17,29 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setSubmitStatus("Message sent! We'll get back to you soon.");
-      setFormData({ name: "", email: "", message: "" });
-      setIsSubmitting(false);
-    }, 1500);
-  };
+    try {
+      console.log("Submitting contact form:", formData);
+      const response = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setSubmitStatus(data.message);
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        setSubmitStatus(data.message || "Failed to send message. Please try again later.");
+      }
+    } catch (error) {
+      setSubmitStatus("Failed to send message. Please try again later.");
+      console.error("Error submitting contact form:", error);
+    }
+    setIsSubmitting(false);
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
