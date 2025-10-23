@@ -301,11 +301,6 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             <p className="text-gray-600">Join us and start building your perfect resume</p>
           </div>
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {errors.general && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-                <p className="text-red-800 text-sm text-center">{errors.general}</p>
-              </div>
-            )}
             <div>
               <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
                 Full Name
@@ -385,11 +380,11 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               />
               <label htmlFor="terms" className="text-sm text-gray-600">
                 I agree to the{" "}
-                <a href="#" className="text-purple-600 hover:text-purple-700 transition-colors">
+                <a href="Privacy" className="text-purple-600 hover:text-purple-700 transition-colors">
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="#" className="text-purple-600 hover:text-purple-700 transition-colors">
+                <a href="Privacy" className="text-purple-600 hover:text-purple-700 transition-colors">
                   Privacy Policy
                 </a>
               </label>
@@ -551,11 +546,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignup, onSwitchToForgotPasswor
             <p className="text-gray-600">Sign in to access your resume builder</p>
           </div>
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {errors.general && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-                <p className="text-red-800 text-sm">{errors.general}</p>
-              </div>
-            )}
             <div>
               <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
                 Email Address
