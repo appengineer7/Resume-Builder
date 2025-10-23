@@ -10,6 +10,8 @@ import {
   Code,
   Award,
   Palette,
+  Heart,
+  LayoutTemplate,
   Eye,
   Type,
   ChevronLeft,
@@ -571,7 +573,7 @@ export default function ResumeBuilder() {
     },
     {
       label: "Hobbies",
-      icon: <Palette size={16} />,
+      icon: <Heart size={16} />,
       component: (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -592,7 +594,7 @@ export default function ResumeBuilder() {
     },
     {
       label: "Choose Template",
-      icon: <Palette size={16} />,
+      icon: <LayoutTemplate size={16} />,
       component: (
         <motion.div
           initial={{ opacity: 0, y: 20 }}

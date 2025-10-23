@@ -54,7 +54,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
           body: JSON.stringify(formData),
         });
         const data = await res.json();
-        // console.log("API Response:", data);
         if (res.ok) {
           setStatus(data.message || "Reset link sent to your email!");
           setErrors({});
@@ -176,6 +175,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     name: "",
     email: "",
     password: "",
+    professionalType: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -204,6 +204,9 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
+    if (!formData.professionalType) {
+      newErrors.professionalType = "Professional type is required";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -223,7 +226,6 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
         const data = await res.json();
         if (res.ok) {
-          // console.log("Signup successful:", data);
           onClose();
         } else {
           setErrors({ general: data.message || "Signup failed. Please try again." });
@@ -308,6 +310,27 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 required
               />
               {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+            </div>
+            <div>
+              <label htmlFor="professionalType" className="block text-sm font-semibold text-gray-700 mb-2">
+                Professional Type
+              </label>
+              <select
+                id="professionalType"
+                name="professionalType"
+                value={formData.professionalType}
+                onChange={handleInputChange}
+                className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:ring-4 focus:ring-purple-200 focus:border-purple-500 ${errors.professionalType ? "border-red-300 focus:border-red-500 focus:ring-red-200" : "border-gray-200 focus:border-purple-500"
+                  }`}
+                required
+              >
+                <option value="" disabled>Select your professional type</option>
+                <option value="Software Engineer">Software Engineer</option>
+                <option value="Product Manager">Product Manager</option>
+                <option value="Marketing Director">Marketing Director</option>
+                <option value="Other">Other</option>
+              </select>
+              {errors.professionalType && <p className="mt-1 text-sm text-red-600">{errors.professionalType}</p>}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -452,7 +475,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignup, onSwitchToForgotPasswor
 
         const data = await res.json();
         if (res.ok) {
-          // console.log("Login successful:", data);
           setIsLoggedIn(true);
           onClose();
         } else {
@@ -615,8 +637,8 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignup, onSwitchToForgotPasswor
 
 const Home = () => {
   const navigate = useNavigate();
-  const { token } = useParams(); // Extract token from URL
-  const location = useLocation(); // To check the current path
+  const { token } = useParams();
+  const location = useLocation();
   const [currentFeature, setCurrentFeature] = useState(0);
   const [hoveredCard, setHoveredCard] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -628,7 +650,6 @@ const Home = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [resetError, setResetError] = useState("");
   const [resetSuccess, setResetSuccess] = useState("");
-
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -680,7 +701,6 @@ const Home = () => {
     },
   ];
 
-  // Check authentication status on mount
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
@@ -690,7 +710,6 @@ const Home = () => {
         });
         if (res.ok) {
           const data = await res.json();
-          // console.log("Authenticated user:", data);
           setIsLoggedIn(true);
         } else {
           setIsLoggedIn(false);
@@ -743,37 +762,31 @@ const Home = () => {
   };
 
   const closeAllModals = () => {
-    // console.log("Closing all modals");
     setShowLoginModal(false);
     setShowSignupModal(false);
     setShowForgotPasswordModal(false);
   };
 
   const switchToSignup = () => {
-    // console.log("Switching to Signup Modal");
     closeAllModals();
     setShowSignupModal(true);
   };
 
   const switchToForgotPassword = () => {
-    // console.log("Switching to Forgot Password Modal");
     closeAllModals();
     setShowForgotPasswordModal(true);
   };
 
   const switchToLoginFromSignup = () => {
-    // console.log("Switching to Login Modal from Signup");
     closeAllModals();
     setShowLoginModal(true);
   };
 
   const switchToLoginFromForgotPassword = () => {
-    // console.log("Switching to Login Modal from Forgot Password");
     closeAllModals();
     setShowLoginModal(true);
   };
 
-  // Handle reset password submission
   const handleResetPasswordSubmit = async (e) => {
     e.preventDefault();
     if (!token) {
@@ -795,7 +808,6 @@ const Home = () => {
         body: JSON.stringify({ token, newPassword: resetPassword }),
       });
       const data = await res.json();
-      // console.log("Reset Password Response:", data);
       if (res.ok) {
         setResetSuccess("Password reset successfully. Redirecting to login...");
         setTimeout(() => {
@@ -814,7 +826,21 @@ const Home = () => {
     }
   };
 
-  // Show a loading state while checking authentication
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.ok) {
+        setIsLoggedIn(false);
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -835,7 +861,6 @@ const Home = () => {
     );
   }
 
-  // Render reset password page if token is present in URL
   if (token && location.pathname.startsWith("/reset-password")) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -857,7 +882,6 @@ const Home = () => {
               </svg>
             </button>
           </div>
-
           {resetError && <p className="text-red-500 text-center mb-4">{resetError}</p>}
           {resetSuccess && <p className="text-green-500 text-center mb-4">{resetSuccess}</p>}
           <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
@@ -1045,27 +1069,6 @@ const Home = () => {
                   onClick={() => navigate("/builder", { state: { step: 6 } })}
                 >
                   View Templates
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="px-12 py-5 text-lg font-bold border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-                  onClick={async () => {
-                    try {
-                      const res = await fetch("http://localhost:5000/api/auth/logout", {
-                        method: "POST",
-                        credentials: "include",
-                      });
-                      if (res.ok) {
-                        setIsLoggedIn(false);
-                        navigate("/");
-                      }
-                    } catch (error) {
-                      console.error("Logout error:", error);
-                    }
-                  }}
-                >
-                  Logout
                 </Button>
               </>
             ) : (
@@ -1388,7 +1391,10 @@ const Home = () => {
       <footer className="py-12 bg-gradient-to-r from-slate-900 to-purple-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-center md:text-left">
+
+            {/* Brand Section */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -1398,10 +1404,18 @@ const Home = () => {
               <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
                 ResumeBuilder
               </div>
-              <p className="text-gray-300 text-sm">
-                Built by <a href="https://nexelix.tech/"><span className="font-semibold text-purple-400 hover:underline">Nexelix Tech</span></a> for job seekers everywhere. Helping you land your dream career.
+              <p className="text-gray-300 text-sm leading-relaxed max-w-xs mx-auto md:mx-0">
+                Built by{" "}
+                <a href="https://nexelix.tech/">
+                  <span className="font-semibold text-purple-400 hover:underline">
+                    Nexelix Tech
+                  </span>
+                </a>{" "}
+                for job seekers everywhere. Helping you land your dream career.
               </p>
             </motion.div>
+
+            {/* Link Sections */}
             {[
               { title: "Product", links: ["Templates", "Builder"] },
               { title: "Company", links: ["About", "Contact"] },
@@ -1409,17 +1423,17 @@ const Home = () => {
             ].map((section, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                className="flex flex-col items-center md:items-start"
               >
-                <h4 className="font-bold text-gray-200 mb-4">{section.title}</h4>
+                <h4 className="font-bold text-gray-200 mb-3">{section.title}</h4>
                 <div className="space-y-2">
                   {section.links.map((link, linkIndex) => (
                     <motion.div key={linkIndex} whileHover={{ x: 2 }}>
                       {section.title === "Product" ? (
-                        // ✅ Redirect "Templates" to /builder with state
                         <button
                           onClick={() =>
                             link === "Templates"
@@ -1443,12 +1457,50 @@ const Home = () => {
                 </div>
               </motion.div>
             ))}
-
+            {/* Account Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center md:items-start"
+            >
+              <h4 className="font-bold text-gray-200 mb-3">Account</h4>
+              <div className="space-y-2">
+                {isLoggedIn ? (
+                  <motion.div whileHover={{ x: 2 }}>
+                    <button
+                      onClick={handleLogout}
+                      className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
+                    >
+                      Logout
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.div whileHover={{ x: 2 }}>
+                    <Link
+                      onClick={handleLoginClick}
+                      className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
+                    >
+                      Login
+                    </Link>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
           </div>
+          {/* Divider & Bottom Note */}
           <div className="border-t border-white/10 mt-12 pt-8 text-center">
             <p className="text-gray-400 text-sm">
               © 2025 Resume Builder. All rights reserved.
-              <span className="ml-2 text-purple-400">Made by <a href="https://nexelix.tech/"><span className="hover:underline font-semibold text-purple-500">Nexelix Tech</span> </a></span>
+              <span className="ml-2 text-purple-400">
+                Made by{" "}
+                <a href="https://nexelix.tech/">
+                  <span className="hover:underline font-semibold text-purple-500">
+                    Nexelix Tech
+                  </span>
+                </a>
+              </span>
             </p>
           </div>
         </div>

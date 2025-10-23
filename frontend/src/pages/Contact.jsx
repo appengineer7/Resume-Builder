@@ -208,76 +208,97 @@ const Contact = () => {
       </section>
 
       <footer className="py-12 bg-gradient-to-r from-slate-900 to-purple-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
-                ResumeBuilder
-              </div>
-              <p className="text-gray-300 text-sm">
-                Built by <a href="https://nexelix.tech/"><span className="font-semibold text-purple-400 hover:underline">Nexelix Tech</span></a> for job seekers everywhere. Helping you land your dream career.
-              </p>
-            </motion.div>
-            {[
-              { title: "Product", links: ["Templates", "Builder"] },
-              { title: "Company", links: ["About", "Contact"] },
-              { title: "Support", links: ["Privacy"] },
-            ].map((section, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <h4 className="font-bold text-gray-200 mb-4">{section.title}</h4>
-                <div className="space-y-2">
-                  {section.links.map((link, linkIndex) => (
-                    <motion.a
-                      key={linkIndex}
-                      className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
-                      whileHover={{ x: 2 }}
-                    >
-                      {section.title === "Product" ? (
-                        <button
-                          onClick={() =>
-                            link === "Templates"
-                              ? navigate("/builder", { state: { step: 6 } })
-                              : navigate(`/${link.toLowerCase()}`)
-                          }
-                          className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
-                        >
-                          {link}
-                        </button>
-                      ) : (
-                        <Link
-                          to={`/${link.toLowerCase()}`}
-                          className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
-                        >
-                          {link}
-                        </Link>
-                      )}
+                {/* Background overlay */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
 
-                    </motion.a>
-                  ))}
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Grid Layout */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-center md:text-left">
+
+                        {/* Logo + Info */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6 }}
+                            className="flex flex-col items-center md:items-start"
+                        >
+                            <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-4">
+                                ResumeBuilder
+                            </div>
+                            <p className="text-gray-300 text-sm leading-relaxed max-w-xs mx-auto md:mx-0">
+                                Built by{" "}
+                                <a
+                                    href="https://nexelix.tech/"
+                                    className="font-semibold text-purple-400 hover:underline"
+                                >
+                                    Nexelix Tech
+                                </a>{" "}
+                                for job seekers everywhere. Helping you land your dream career.
+                            </p>
+                        </motion.div>
+
+                        {/* Footer Link Sections */}
+                        {[
+                            { title: "Product", links: ["Templates", "Builder"] },
+                            { title: "Company", links: ["About", "Contact"] },
+                            { title: "Support", links: ["Privacy"] },
+                        ].map((section, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: index * 0.1 }}
+                                viewport={{ once: true }}
+                                className="flex flex-col items-center md:items-start"
+                            >
+                                <h4 className="font-bold text-gray-200 mb-3">{section.title}</h4>
+                                <div className="space-y-2">
+                                    {section.links.map((link, linkIndex) => (
+                                        <motion.div key={linkIndex} whileHover={{ x: 2 }}>
+                                            {section.title === "Product" ? (
+                                                <button
+                                                    onClick={() =>
+                                                        link === "Templates"
+                                                            ? navigate("/builder", { state: { step: 6 } })
+                                                            : navigate(`/${link.toLowerCase()}`)
+                                                    }
+                                                    className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
+                                                >
+                                                    {link}
+                                                </button>
+                                            ) : (
+                                                <Link
+                                                    to={`/${link.toLowerCase()}`}
+                                                    className="block text-gray-300 text-sm hover:text-white transition-colors duration-200"
+                                                >
+                                                    {link}
+                                                </Link>
+                                            )}
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    {/* Bottom Section */}
+                    <div className="border-t border-white/10 mt-12 pt-8 text-center">
+                        <p className="text-gray-400 text-sm">
+                            © 2025 Resume Builder. All rights reserved.
+                            <span className="ml-2 text-purple-400">
+                                Made by{" "}
+                                <a
+                                    href="https://nexelix.tech/"
+                                    className="hover:underline font-semibold text-purple-500"
+                                >
+                                    Nexelix Tech
+                                </a>
+                            </span>
+                        </p>
+                    </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-          <div className="border-t border-white/10 mt-12 pt-8 text-center">
-            <p className="text-gray-400 text-sm">
-              © 2025 Resume Builder. All rights reserved.
-              <span className="ml-2 text-purple-400">Made by <a href="https://nexelix.tech/"><span className="hover:underline font-semibold text-purple-500">Nexelix Tech</span> </a></span>
-            </p>
-          </div>
-        </div>
-      </footer>
+            </footer>
     </div>
   );
 };
