@@ -175,7 +175,6 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     name: "",
     email: "",
     password: "",
-    professionalType: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -203,9 +202,6 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
-    }
-    if (!formData.professionalType) {
-      newErrors.professionalType = "Professional type is required";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -310,27 +306,6 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 required
               />
               {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
-            </div>
-            <div>
-              <label htmlFor="professionalType" className="block text-sm font-semibold text-gray-700 mb-2">
-                Professional Type
-              </label>
-              <select
-                id="professionalType"
-                name="professionalType"
-                value={formData.professionalType}
-                onChange={handleInputChange}
-                className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:ring-4 focus:ring-purple-200 focus:border-purple-500 ${errors.professionalType ? "border-red-300 focus:border-red-500 focus:ring-red-200" : "border-gray-200 focus:border-purple-500"
-                  }`}
-                required
-              >
-                <option value="" disabled>Select your professional type</option>
-                <option value="Software Engineer">Software Engineer</option>
-                <option value="Product Manager">Product Manager</option>
-                <option value="Marketing Director">Marketing Director</option>
-                <option value="Other">Other</option>
-              </select>
-              {errors.professionalType && <p className="mt-1 text-sm text-red-600">{errors.professionalType}</p>}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">

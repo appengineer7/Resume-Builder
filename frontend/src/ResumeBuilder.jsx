@@ -1,33 +1,17 @@
-// src/ResumeBuilder.jsx
 import React, { useState, useRef, useEffect, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import { toast } from "react-toastify"; // Added for notifications
+import { toast } from "react-toastify";
 import {
-  Upload,
-  Briefcase,
-  GraduationCap,
-  Code,
-  Award,
-  Palette,
-  Heart,
-  LayoutTemplate,
-  Eye,
-  Type,
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
-  Maximize2,
-  Minimize2,
-  Printer,
-  Download,
-  Save
+  Upload, Briefcase, GraduationCap, Code, Award, Palette, Heart, LayoutTemplate, Eye, Type,
+  ChevronLeft, ChevronRight, Sparkles, Maximize2, Minimize2, Printer, Download, Save, Activity,
 } from "lucide-react";
 import domToImage from "dom-to-image";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
-import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
+import "react-toastify/dist/ReactToastify.css";
 
+// [Existing imports for templates and forms remain unchanged]
 import ClassicTemplate from "./components/templates/ClassicTemplate";
 import ModernTemplate from "./components/templates/ModernTemplate";
 import MinimalEleganceAltTemplate from "./components/templates/MinimalEleganceTemplate.jsx";
@@ -59,6 +43,7 @@ import UploadResume from "./components/UploadResume.jsx";
 
 import resumeData from "./data/resumeData.js";
 
+// [Existing imports for images remain unchanged]
 import classicImg from "./assets/images/template-image/classic.png";
 import modernImg from "./assets/images/template-image/morden.png";
 import professionalImg from "./assets/images/template-image/professionals.png";
@@ -89,7 +74,7 @@ const toastConfig = {
   theme: "colored",
 };
 
-// Print-friendly wrapper component
+// Print-friendly wrapper component (unchanged)
 const PrintResumeWrapper = forwardRef(({ data, color, font, template }, ref) => {
   const TemplateComponent = {
     classic: ClassicTemplate,
@@ -125,15 +110,66 @@ PrintResumeWrapper.displayName = "PrintResumeWrapper";
 export default function ResumeBuilder() {
   const location = useLocation();
   const [step, setStep] = useState(location.state?.step || 0);
-  const [template, setTemplate] = useState("classic");
-  const [selectedColor, setSelectedColor] = useState("#2563eb");
-  const [selectedFont, setSelectedFont] = useState("Arial");
-  const [previewMode, setPreviewMode] = useState("fit"); // "fit", "full", "print"
+  const [template, setTemplate] = useState(() => {
+    return localStorage.getItem("resumeTemplate") || "classic";
+  });
+  const [selectedColor, setSelectedColor] = useState(() => {
+    return localStorage.getItem("resumeColor") || "#2563eb";
+  });
+  const [selectedFont, setSelectedFont] = useState(() => {
+    return localStorage.getItem("resumeFont") || "Arial";
+  });
+  const [previewMode, setPreviewMode] = useState("fit");
   const [isPrinting, setIsPrinting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const templatesPerPage = 8;
 
+  // Initialize data from localStorage or default resumeData
+  const [data, setData] = useState(() => {
+    const savedData = localStorage.getItem("resumeData");
+    return savedData ? JSON.parse(savedData) : resumeData;
+  });
+
+  // Save data to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("resumeData", JSON.stringify(data));
+    } catch (error) {
+      console.error("Error saving resume data to localStorage:", error);
+      toast.error("Failed to save progress. Local storage may be full.", toastConfig);
+    }
+  }, [data]);
+
+  // Save template, color, and font to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem("resumeTemplate", template);
+      localStorage.setItem("resumeColor", selectedColor);
+      localStorage.setItem("resumeFont", selectedFont);
+    } catch (error) {
+      console.error("Error saving template settings to localStorage:", error);
+      toast.error("Failed to save template settings.", toastConfig);
+    }
+  }, [template, selectedColor, selectedFont]);
+
+  // Notify user when saved data is loaded on mount
+const hasShownToast = useRef(false);
+
+  useEffect(() => {
+    if (hasShownToast.current) return;
+
+    const savedData = localStorage.getItem("resumeData");
+    if (savedData && JSON.parse(savedData) !== resumeData) {
+      toast.info("Loaded saved resume data from your browser.", {
+        ...toastConfig,
+        toastId: "resume-loaded-toast",
+      });
+      hasShownToast.current = true;
+    }
+  }, []);
+
+  // [Existing font loading useEffect remains unchanged]
   useEffect(() => {
     if (!selectedFont) return;
 
@@ -160,11 +196,10 @@ export default function ResumeBuilder() {
     };
   }, [selectedFont]);
 
-  const [data, setData] = useState(resumeData);
   const previewRef = useRef(null);
   const printRef = useRef(null);
 
-  // Automatically redirect to Upload / Info if Preview & Customize is accessed with empty data
+  // [Existing useEffect for redirecting on empty data remains unchanged]
   useEffect(() => {
     if (step === steps.length - 1 && isDataEmpty()) {
       toast.error(
@@ -174,6 +209,38 @@ export default function ResumeBuilder() {
       setStep(0);
     }
   }, [step, data]);
+
+  // Function to handle saving progress explicitly
+  const handleSaveProgress = () => {
+    try {
+      localStorage.setItem("resumeData", JSON.stringify(data));
+      localStorage.setItem("resumeTemplate", template);
+      localStorage.setItem("resumeColor", selectedColor);
+      localStorage.setItem("resumeFont", selectedFont);
+      toast.success("Progress saved successfully!", toastConfig);
+    } catch (error) {
+      console.error("Error saving progress:", error);
+      toast.error("Failed to save progress. Local storage may be full.", toastConfig);
+    }
+  };
+
+  // Function to clear saved data
+  const handleClearProgress = () => {
+    try {
+      localStorage.removeItem("resumeData");
+      localStorage.removeItem("resumeTemplate");
+      localStorage.removeItem("resumeColor");
+      localStorage.removeItem("resumeFont");
+      setData(resumeData);
+      setTemplate("classic");
+      setSelectedColor("#2563eb");
+      setSelectedFont("Arial");
+      toast.success("Resume data cleared successfully!", toastConfig);
+    } catch (error) {
+      console.error("Error clearing progress:", error);
+      toast.error("Failed to clear progress.", toastConfig);
+    }
+  };
 
   const handleParsedResume = (parsedData) => {
     setData((prev) => ({
@@ -187,7 +254,7 @@ export default function ResumeBuilder() {
     setData((prev) => ({ ...prev, personal: { ...prev.personal, ...changes } }));
   };
 
-  // Print handling
+  // [Existing print handling useEffect remains unchanged]
   useEffect(() => {
     const handleBeforePrint = () => {
       setIsPrinting(true);
@@ -207,6 +274,7 @@ export default function ResumeBuilder() {
     };
   }, []);
 
+  // [Existing handlePrint, handleDownloadImage, handleDownloadPDF functions remain unchanged]
   const handlePrint = () => {
     setPreviewMode("print");
     setTimeout(() => {
@@ -214,7 +282,6 @@ export default function ResumeBuilder() {
     }, 500);
   };
 
-  // Download as Image handler
   const handleDownloadImage = async () => {
     if (!previewRef.current) return;
 
@@ -272,7 +339,6 @@ export default function ResumeBuilder() {
     }
   };
 
-  // Download as PDF handler
   const handleDownloadPDF = async () => {
     if (!previewRef.current) return;
 
@@ -336,7 +402,7 @@ export default function ResumeBuilder() {
     }
   };
 
-  // Template configurations
+  // [Existing template configurations and pagination logic remain unchanged]
   const templatesConfig = [
     {
       id: "pro-two-col-temp",
@@ -375,7 +441,6 @@ export default function ResumeBuilder() {
     { id: "new-temp", label: "New Template", img: pro_two_col_Img },
   ];
 
-  // Pagination logic
   const totalPages = Math.ceil(templatesConfig.length / templatesPerPage);
   const startIndex = (currentPage - 1) * templatesPerPage;
   const currentTemplates = templatesConfig.slice(
@@ -473,6 +538,7 @@ export default function ResumeBuilder() {
   );
 
   const steps = [
+    // [Existing steps remain unchanged, only adding buttons to each step's component]
     {
       label: "Upload / Info",
       icon: <Upload size={16} />,
@@ -518,6 +584,7 @@ export default function ResumeBuilder() {
             education={data.education}
             onChange={(education) => setData((prev) => ({ ...prev, education }))}
           />
+
         </motion.div>
       ),
     },
@@ -550,6 +617,7 @@ export default function ResumeBuilder() {
               />
             </div>
           </div>
+
         </motion.div>
       ),
     },
@@ -568,6 +636,7 @@ export default function ResumeBuilder() {
               setData((prev) => ({ ...prev, certifications }))
             }
           />
+
         </motion.div>
       ),
     },
@@ -589,6 +658,7 @@ export default function ResumeBuilder() {
               }))
             }
           />
+
         </motion.div>
       ),
     },
@@ -630,11 +700,10 @@ export default function ResumeBuilder() {
                   }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setTemplate(t.id)}
-                  className={`relative overflow-hidden cursor-pointer transition-all duration-300 group border-2 rounded-2xl ${
-                    template === t.id
+                  className={`relative overflow-hidden cursor-pointer transition-all duration-300 group border-2 rounded-2xl ${template === t.id
                       ? "border-purple-500 ring-4 ring-purple-200/50 shadow-2xl bg-purple-50"
                       : "border-gray-200 hover:border-purple-300 hover:bg-purple-50"
-                  }`}
+                    }`}
                   style={{ aspectRatio: "0.7 / 1", height: "auto" }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -647,9 +716,8 @@ export default function ResumeBuilder() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
                     <p
-                      className={`text-sm font-bold transition-all duration-300 ${
-                        template === t.id ? "text-purple-300 scale-105" : "text-white"
-                      }`}
+                      className={`text-sm font-bold transition-all duration-300 ${template === t.id ? "text-purple-300 scale-105" : "text-white"
+                        }`}
                     >
                       {t.label}
                     </p>
@@ -676,11 +744,10 @@ export default function ResumeBuilder() {
                     whileTap={{ scale: 0.95 }}
                     onClick={goToPreviousPage}
                     disabled={currentPage === 1}
-                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ${
-                      currentPage === 1
+                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ${currentPage === 1
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-md"
-                    }`}
+                      }`}
                     aria-label="Previous page"
                   >
                     Previous
@@ -690,11 +757,10 @@ export default function ResumeBuilder() {
                     whileTap={{ scale: 0.95 }}
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ${
-                      currentPage === totalPages
+                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ${currentPage === totalPages
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-md"
-                    }`}
+                      }`}
                     aria-label="Next page"
                   >
                     Next
@@ -708,11 +774,10 @@ export default function ResumeBuilder() {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => goToPage(page)}
-                      className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ${
-                        currentPage === page
+                      className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 ${currentPage === page
                           ? "bg-purple-500 text-white shadow-md"
                           : "bg-gray-100 text-gray-700 hover:bg-purple-100 hover:text-purple-700"
-                      }`}
+                        }`}
                       aria-label={`Go to page ${page}`}
                       aria-current={currentPage === page ? "page" : undefined}
                     >
@@ -788,11 +853,10 @@ export default function ResumeBuilder() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    previewMode === "fit"
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${previewMode === "fit"
                       ? "bg-purple-600 text-white shadow-lg"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setPreviewMode("fit")}
                 >
                   <Maximize2 size={16} />
@@ -801,11 +865,10 @@ export default function ResumeBuilder() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    previewMode === "full"
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${previewMode === "full"
                       ? "bg-purple-600 text-white shadow-lg"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setPreviewMode("full")}
                 >
                   <Maximize2 size={16} />
@@ -815,11 +878,10 @@ export default function ResumeBuilder() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   disabled={isPrinting || isDownloading}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    previewMode === "print" || isPrinting
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${previewMode === "print" || isPrinting
                       ? "bg-purple-600 text-white shadow-lg"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={handlePrint}
                 >
                   {isPrinting ? "Preparing..." : "Print Preview"}
@@ -828,11 +890,10 @@ export default function ResumeBuilder() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   disabled={isDownloading}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    isDownloading
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${isDownloading
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={handleDownloadImage}
                 >
                   <Save size={16} />
@@ -842,15 +903,31 @@ export default function ResumeBuilder() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   disabled={isDownloading}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    isDownloading
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${isDownloading
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={handleDownloadPDF}
                 >
                   <Download size={16} />
                   {isDownloading ? "Generating..." : "Save as PDF"}
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleSaveProgress}
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold transition-all duration-300 flex items-center gap-2"
+                >
+                  <Activity size={16} />
+                  Save Progress
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleClearProgress}
+                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-semibold transition-all duration-300 flex items-center gap-2"
+                >
+                  Clear Progress
                 </motion.button>
               </motion.div>
 
@@ -862,9 +939,8 @@ export default function ResumeBuilder() {
                   transition={{ delay: 0.1 }}
                 >
                   <div
-                    className={`bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-white/20 relative ${
-                      previewMode === "full" ? "fixed inset-0 z-50 bg-white/95" : ""
-                    }`}
+                    className={`bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-white/20 relative ${previewMode === "full" ? "fixed inset-0 z-50 bg-white/95" : ""
+                      }`}
                   >
                     {previewMode === "full" && (
                       <motion.button
@@ -888,9 +964,8 @@ export default function ResumeBuilder() {
 
                     <div
                       ref={previewRef}
-                      className={`resume-capture transition-all duration-300 ${
-                        previewMode === "full" ? "w-full h-full" : "border border-gray-200 rounded-xl"
-                      }`}
+                      className={`resume-capture transition-all duration-300 ${previewMode === "full" ? "w-full h-full" : "border border-gray-200 rounded-xl"
+                        }`}
                       style={getPreviewStyles()}
                     >
                       {renderResumeTemplate(null)}
@@ -971,11 +1046,10 @@ export default function ResumeBuilder() {
                               key={clr.color}
                               whileHover={{ scale: 1.15, rotate: 5 }}
                               whileTap={{ scale: 0.9 }}
-                              className={`relative w-10 h-10 rounded-full border-3 shadow-lg overflow-hidden transition-all duration-300 ${
-                                selectedColor === clr.color
+                              className={`relative w-10 h-10 rounded-full border-3 shadow-lg overflow-hidden transition-all duration-300 ${selectedColor === clr.color
                                   ? "border-purple-500 ring-4 ring-purple-200/50 scale-110 shadow-purple-500/25"
                                   : "border-gray-300 hover:border-purple-400 hover:scale-105"
-                              }`}
+                                }`}
                               style={{ backgroundColor: clr.color }}
                               onClick={() => setSelectedColor(clr.color)}
                               title={clr.label}
@@ -1049,11 +1123,10 @@ export default function ResumeBuilder() {
                           whileHover={{ scale: 1.05, y: -2 }}
                           whileTap={{ scale: 0.95 }}
                           disabled={isDownloading}
-                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                            isDownloading
+                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${isDownloading
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-xl hover:shadow-2xl"
-                          }`}
+                            }`}
                           onClick={handleDownloadPDF}
                         >
                           {isDownloading ? (
@@ -1073,11 +1146,10 @@ export default function ResumeBuilder() {
                           whileHover={{ scale: 1.05, y: -2 }}
                           whileTap={{ scale: 0.95 }}
                           disabled={isDownloading}
-                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                            isDownloading
+                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${isDownloading
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-xl hover:shadow-2xl"
-                          }`}
+                            }`}
                           onClick={handleDownloadImage}
                         >
                           {isDownloading ? (
@@ -1097,11 +1169,10 @@ export default function ResumeBuilder() {
                           whileHover={{ scale: 1.05, y: -2 }}
                           whileTap={{ scale: 0.95 }}
                           disabled={isPrinting || isDownloading}
-                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
-                            isPrinting || isDownloading
+                          className={`w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${isPrinting || isDownloading
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl hover:shadow-2xl"
-                          }`}
+                            }`}
                           onClick={handlePrint}
                         >
                           {isPrinting ? (
@@ -1138,7 +1209,6 @@ export default function ResumeBuilder() {
       ),
     },
   ];
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -1204,15 +1274,14 @@ export default function ResumeBuilder() {
                 <motion.button
                   whileHover={{ scale: 1.15, y: -5 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full transition-all duration-300 overflow-hidden ${
-                    i === step
+                  className={`relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full transition-all duration-300 overflow-hidden ${i === step
                       ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-xl"
                       : i < step
-                      ? "bg-emerald-500/80 text-white shadow-lg"
-                      : i === steps.length - 1 && isDataEmpty()
-                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                      : "bg-white/60 backdrop-blur-sm text-gray-500 border-2 border-gray-300 shadow-md"
-                  }`}
+                        ? "bg-emerald-500/80 text-white shadow-lg"
+                        : i === steps.length - 1 && isDataEmpty()
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          : "bg-white/60 backdrop-blur-sm text-gray-500 border-2 border-gray-300 shadow-md"
+                    }`}
                   onClick={() => {
                     if (i === steps.length - 1 && isDataEmpty()) {
                       toast.error(
@@ -1237,15 +1306,14 @@ export default function ResumeBuilder() {
                   <div className="relative z-10">{s.icon}</div>
                 </motion.button>
                 <span
-                  className={`text-xs mt-2 font-medium transition-colors text-center px-1 whitespace-nowrap ${
-                    i === step
+                  className={`text-xs mt-2 font-medium transition-colors text-center px-1 whitespace-nowrap ${i === step
                       ? "text-purple-600"
                       : i < step
-                      ? "text-emerald-600"
-                      : i === steps.length - 1 && isDataEmpty()
-                      ? "text-gray-400"
-                      : "text-gray-500"
-                  }`}
+                        ? "text-emerald-600"
+                        : i === steps.length - 1 && isDataEmpty()
+                          ? "text-gray-400"
+                          : "text-gray-500"
+                    }`}
                 >
                   {s.label}
                 </span>
@@ -1260,9 +1328,8 @@ export default function ResumeBuilder() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -30, scale: 0.95 }}
           transition={{ type: "spring", stiffness: 200, damping: 25 }}
-          className={`backdrop-blur-xl bg-white/80 shadow-2xl rounded-3xl p-4 sm:p-6 md:p-8 w-full max-w-7xl border border-white/20 relative overflow-hidden ${
-            previewMode === "full" ? "rounded-none border-none shadow-none p-0" : ""
-          }`}
+          className={`backdrop-blur-xl bg-white/80 shadow-2xl rounded-3xl p-4 sm:p-6 md:p-8 w-full max-w-7xl border border-white/20 relative overflow-hidden ${previewMode === "full" ? "rounded-none border-none shadow-none p-0" : ""
+            }`}
         >
           <AnimatePresence mode="wait">{steps[step].component}</AnimatePresence>
 
@@ -1289,11 +1356,10 @@ export default function ResumeBuilder() {
                 whileHover={{ scale: 1.05, x: 5 }}
                 whileTap={{ scale: 0.95 }}
                 disabled={isPrinting || isDownloading}
-                className={`sm:ml-auto flex items-center gap-2 px-8 py-3 rounded-xl shadow-xl font-semibold transition-all duration-300 ${
-                  isPrinting || isDownloading
+                className={`sm:ml-auto flex items-center gap-2 px-8 py-3 rounded-xl shadow-xl font-semibold transition-all duration-300 ${isPrinting || isDownloading
                     ? "bg-gray-400 text-white cursor-not-allowed"
                     : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-2xl"
-                }`}
+                  }`}
                 onClick={handleNextStep}
               >
                 Next
@@ -1338,11 +1404,10 @@ export default function ResumeBuilder() {
               <div className="flex items-center gap-2 flex-wrap no-print">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    previewMode === "fit"
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${previewMode === "fit"
                       ? "bg-purple-600 text-white shadow-lg"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={() => setPreviewMode("fit")}
                 >
                   <Minimize2 size={16} />
@@ -1351,11 +1416,10 @@ export default function ResumeBuilder() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   disabled={isPrinting || isDownloading}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    isPrinting || isDownloading
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${isPrinting || isDownloading
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={handlePrint}
                 >
                   <Printer size={16} />
@@ -1364,11 +1428,10 @@ export default function ResumeBuilder() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   disabled={isDownloading}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    isDownloading
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${isDownloading
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={handleDownloadImage}
                 >
                   <Download size={16} />
@@ -1377,15 +1440,29 @@ export default function ResumeBuilder() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   disabled={isDownloading}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
-                    isDownloading
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${isDownloading
                       ? "bg-gray-400 cursor-not-allowed"
                       : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                    }`}
                   onClick={handleDownloadPDF}
                 >
                   <Download size={16} />
                   {isDownloading ? "Generating..." : "Download PDF"}
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  onClick={handleSaveProgress}
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold transition-all duration-300 flex items-center gap-2"
+                >
+                  <Save size={16} />
+                  Save Progress
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  onClick={handleClearProgress}
+                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-semibold transition-all duration-300 flex items-center gap-2"
+                >
+                  Clear Progress
                 </motion.button>
               </div>
             </div>
@@ -1517,8 +1594,8 @@ export default function ResumeBuilder() {
             position: static !important;
             page-break-inside: avoid;
             page-break-after: avoid !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            margin: 1 !important;
+            padding: 2 !important;
             box-sizing: border-box !important;
           }
 
