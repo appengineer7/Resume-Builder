@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
+
 import { Button } from "../components/ui/button";
 import customIcon from "../assets/images/avatar-icons/customize.png";
 import designIcon from "../assets/images/avatar-icons/design.png";
@@ -55,10 +57,30 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
         });
         const data = await res.json();
         if (res.ok) {
-          setStatus(data.message || "Reset link sent to your email!");
+          const successMesssage = data.message || "Reset link sent to your email!";
+          setStatus(successMesssage);
           setErrors({});
+          toast.success(successMesssage, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            style: { backgroundColor: "#d1fae5", color: "#065f46" },
+          });
         } else {
-          setErrors({ general: data.message || "Failed to send reset email." });
+          const errorMesssage = data.message || "Failed to send reset email.";
+          setErrors({ general: errorMesssage });
+          toast.error(errorMesssage, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            style: { backgroundColor: "#fee2e2", color: "#b91c1c" },
+          });
         }
       } catch (error) {
         console.error("Fetch error:", error);
@@ -120,16 +142,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
               />
               {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
             </div>
-            {errors.general && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-                <p className="text-red-800 text-sm">{errors.general}</p>
-              </div>
-            )}
-            {status && (
-              <div className="bg-green-50 border border-green-200 rounded-xl p-3">
-                <p className="text-green-800 text-sm">{status}</p>
-              </div>
-            )}
             <button
               type="submit"
               disabled={isLoading}
@@ -222,9 +234,30 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
         const data = await res.json();
         if (res.ok) {
+          toast.success("Account created successfully! Please log in.", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
           onClose();
         } else {
-          setErrors({ general: data.message || "Signup failed. Please try again." });
+          const errorMesssage = data.message || "Signup failed. Please try again.";
+          setErrors({ general: errorMesssage });
+          toast.error(errorMesssage, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: { backgroundColor: "#fee2e2", color: "#b91c1c" },
+          });
         }
       } catch (error) {
         setErrors({ general: "Server error. Please try again later." });
@@ -451,9 +484,30 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignup, onSwitchToForgotPasswor
         const data = await res.json();
         if (res.ok) {
           setIsLoggedIn(true);
+          toast.success("Logged in successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
           onClose();
         } else {
-          setErrors({ general: data.message || "Login failed. Please try again." });
+          const errorMesssage = data.message || "Login failed. Please try again.";
+          setErrors({ general: errorMesssage });
+          toast.error(errorMesssage, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: { backgroundColor: "#fee2e2", color: "#b91c1c" },
+          });
         }
       } catch (error) {
         setErrors({ general: "Server error. Please try again later." });
@@ -785,6 +839,17 @@ const Home = () => {
       const data = await res.json();
       if (res.ok) {
         setResetSuccess("Password reset successfully. Redirecting to login...");
+        toast.success("Password reset successfully!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+
         setTimeout(() => {
           navigate("/");
           setResetError("");
@@ -793,7 +858,23 @@ const Home = () => {
           setConfirmPassword("");
         }, 2000);
       } else {
-        setResetError(data.message || "Failed to reset password");
+
+        const errorMsg = data.message || "Failed to reset password";
+        setResetError(errorMsg);
+
+        toast.error(errorMsg, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            background: "#E74C3C", // red tone for error
+            color: "#fff",
+          },
+        });
       }
     } catch (error) {
       console.error("Reset Password Error:", error);
@@ -809,6 +890,19 @@ const Home = () => {
       });
       if (res.ok) {
         setIsLoggedIn(false);
+        toast.success("Logout successfully!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            background: "#27AE60", // red tone for logout
+            color: "#fff",
+          },
+        });
         navigate("/");
       }
     } catch (error) {
@@ -857,8 +951,6 @@ const Home = () => {
               </svg>
             </button>
           </div>
-          {resetError && <p className="text-red-500 text-center mb-4">{resetError}</p>}
-          {resetSuccess && <p className="text-green-500 text-center mb-4">{resetSuccess}</p>}
           <form onSubmit={handleResetPasswordSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">New Password</label>
