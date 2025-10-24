@@ -1,5 +1,5 @@
-// src/components/forms/ExperienceForm.jsx
 import React from "react";
+import AIGenerateDescription from "./AIGenerator";
 
 export default function ExperienceForm({ experiences, onChange }) {
   const updateItem = (id, changes) => {
@@ -20,9 +20,12 @@ export default function ExperienceForm({ experiences, onChange }) {
     onChange(experiences.filter((x) => x.id !== id));
   };
 
+  const handleAIDescription = (id, generated) => {
+    updateItem(id, { description: generated });
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      
       <div className="flex justify-between items-center">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Experience</h3>
         <button
@@ -114,7 +117,16 @@ export default function ExperienceForm({ experiences, onChange }) {
                 </button>
               </div>
             </div>
-
+            {/* AI Suggest Button for Description */}
+            {(exp.title || exp.company) && (
+              <div className="flex justify-center">
+                <AIGenerateDescription
+                  title={exp.title}
+                  company={exp.company}
+                  onGenerate={(generated) => handleAIDescription(exp.id, generated)}
+                />
+              </div>
+            )}
             {/* Description */}
             <div>
               <label

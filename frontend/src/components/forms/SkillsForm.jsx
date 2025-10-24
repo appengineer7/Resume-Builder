@@ -1,7 +1,73 @@
-// src/components/forms/SkillsForm.jsx
-import React from "react";
+import React, { useState } from "react";
+import { Sparkles, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
-export default function SkillsForm({ skills, onChange }) {
+const AISuggestSkills = ({ onSuggest, jobTitle = "" }) => {
+  const [isSuggesting, setIsSuggesting] = useState(false);
+
+  const handleSuggest = async () => {
+    if (!jobTitle) {
+      toast.error("Please enter a job title in Personal Info for better suggestions.", { position: "top-right", autoClose: 3000 });
+      return;
+    }
+
+    setIsSuggesting(true);
+    try {
+      // ChatGPT API for skill suggestions
+      const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a career advisor. Suggest 5-7 key technical and soft skills for the given job title, formatted as a comma-separated list.'
+            },
+            {
+              role: 'user',
+              content: `Suggest top skills for a ${jobTitle} role. Focus on in-demand skills for 2025.`
+            }
+          ],
+          max_tokens: 150,
+          temperature: 0.5,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const suggested = data.choices[0].message.content.trim().replace(/[\n\r]/g, ', ').split(',').map(s => s.trim()).filter(s => s);
+
+      onSuggest(suggested);
+      toast.success("AI Skills Added Successfully!", { position: "top-right", autoClose: 3000 });
+    } catch (error) {
+      console.error("AI Skills Added error:", error);
+      toast.error("Failed to add AI skills.", { position: "top-right", autoClose: 3000 });
+    } finally {
+      setIsSuggesting(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleSuggest}
+      disabled={isSuggesting}
+      className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg text-sm font-medium hover:shadow-md transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${isSuggesting ? 'animate-pulse' : ''}`}
+    >
+      {isSuggesting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+      {isSuggesting ? 'Suggesting...' : 'AI Suggest Skills'}
+    </button>
+  );
+};
+
+export default function SkillsForm({ skills, onChange, jobTitle = "" }) { 
   const addSkill = () => {
     onChange([...skills, ""]);
   };
@@ -16,17 +82,24 @@ export default function SkillsForm({ skills, onChange }) {
     onChange(skills.filter((_, i) => i !== index));
   };
 
+  const handleAISuggest = (suggested) => {
+    onChange([...skills, ...suggested.slice(0, 5)]); // Add up to 5 new skills
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Skills</h3>
-        <button
-          className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm sm:text-base font-medium hover:shadow-md transition-all duration-300"
-          type="button"
-          onClick={addSkill}
-        >
-          + Add
-        </button>
+        <div className="flex gap-2">
+          <button
+            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm sm:text-base font-medium hover:shadow-md transition-all duration-300"
+            type="button"
+            onClick={addSkill}
+          >
+            + Add
+          </button>
+          <AISuggestSkills onSuggest={handleAISuggest} jobTitle={jobTitle} />
+        </div>
       </div>
 
       {skills.map((skill, index) => (

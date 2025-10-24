@@ -122,7 +122,16 @@ export default function BoldResume({
                     <span className="text-xs text-gray-500">{exp.from} - {exp.to || "Present"}</span>
                   </div>
                   <p className="text-xs font-medium">{exp.company}</p>
-                  {exp.description && <p className="text-xs text-gray-600 mt-1">{exp.description}</p>}
+                  {exp.description && 
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />}
                 </div>
               ))}
             </Section>
@@ -149,7 +158,16 @@ export default function BoldResume({
               {projects.map((proj, i) => (
                 <div key={i} className="mb-2 pl-2 border-l-4" style={{ borderColor: color }}>
                   <p className="font-semibold text-sm">{proj.name}</p>
-                  {proj.description && <p className="text-xs">{proj.description}</p>}
+                  {proj.description && 
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />}
                   {proj.link && (
                     <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs">
                       {proj.link}

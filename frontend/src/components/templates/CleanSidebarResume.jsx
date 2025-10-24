@@ -131,7 +131,15 @@ export default function CleanSidebarResume({
                 </div>
                 <p className="text-xs text-gray-700 font-medium">{exp.company}</p>
                 {exp.description && (
-                  <p className="text-xs text-gray-600 mt-1">{exp.description}</p>
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 )}
               </div>
             ))}
@@ -164,7 +172,15 @@ export default function CleanSidebarResume({
               <div key={i} className="p-2">
                 <p className="text-sm font-semibold text-gray-900">{proj.name}</p>
                 {proj.description && (
-                  <p className="text-xs text-gray-700">{proj.description}</p>
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 )}
                 {proj.link && (
                   <a

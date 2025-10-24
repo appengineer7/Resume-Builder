@@ -129,13 +129,22 @@ export default function ModernBlueResume({
           {experiences.length > 0 && (
             <SectionMain title="Job Experience" color={color}>
               {experiences.map((exp, i) => (
-                <div key={i} className="mb-4">
+                <div key={i}>
                   <div className="flex justify-between items-start">
                     <p className="font-bold text-sm uppercase">{exp.title}</p>
                     <p className="text-xs text-gray-500">{exp.from} - {exp.to || "Present"}</p>
                   </div>
                   <p className="text-sm italic">{exp.company} / {exp.location}</p>
-                  {exp.description && <p className="text-sm mt-1">{exp.description}</p>}
+                  {exp.description && 
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />}
                 </div>
               ))}
             </SectionMain>
@@ -145,10 +154,18 @@ export default function ModernBlueResume({
           {projects.length > 0 && (
             <SectionMain title="Projects" color={color}>
               {projects.map((proj, i) => (
-                <div key={i} className="mb-4">
+                <div key={i} className="mb-2">
                   <p className="font-bold text-sm uppercase">{proj.name}</p>
-                  <p className="text-xs text-gray-500">{proj.from} - {proj.to}</p>
-                  {proj.description && <p className="text-sm mt-1">{proj.description}</p>}
+                  {proj.description && 
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />}
                   {proj.link && (
                     <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color }}>
                       {proj.link}

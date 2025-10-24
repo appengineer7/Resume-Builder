@@ -83,7 +83,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
       {/* Skills */}
       {skills.length > 0 && (
         <div className="p-3">
-          <h2 className="text-base font-semibold mb-1" style={{ color }}>
+          <h2 className="text-base font-semibold mb-0" style={{ color }}>
             Skills
           </h2>
           <div className="flex flex-wrap gap-1">
@@ -106,7 +106,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
           <h2 className="text-base font-semibold flex items-center gap-1 mb-1.5" style={{ color }}>
             Experience
           </h2>
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {experiences.map((exp, idx) => (
               <div
                 key={idx}
@@ -121,7 +121,15 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
                 </div>
                 <p className="text-gray-600 text-[10px]">{exp.company || "Company"}</p>
                 {exp.description && (
-                  <p className="text-gray-700 text-[10px] mt-0.5">{exp.description}</p>
+                  <div
+                    className="text-xs text-gray-700 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 )}
               </div>
             ))}
@@ -132,10 +140,10 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
       {/* Education */}
       {education.length > 0 && (
         <div className="p-3">
-          <h2 className="text-base font-semibold flex items-center gap-1 mb-1.5" style={{ color }}>
+          <h2 className="text-base font-semibold flex items-center gap-1 mb-1" style={{ color }}>
             Education
           </h2>
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {education.map((edu, idx) => (
               <div
                 key={idx}
@@ -157,7 +165,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
       {/* Projects */}
       {projects.length > 0 && (
         <div className="p-3">
-          <h2 className="text-base font-semibold flex items-center gap-1 mb-1.5" style={{ color }}>
+          <h2 className="text-base font-semibold flex items-center gap-1 mb-1" style={{ color }}>
             Projects
           </h2>
           <div className="grid gap-1.5">
@@ -165,7 +173,15 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
               <div key={idx} className="p-1.5 border rounded-md bg-gray-50 text-[11px]">
                 <p className="font-semibold">{project.name || "Project"}</p>
                 {project.description && (
-                  <p className="text-[10px] text-gray-700">{project.description}</p>
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: project.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 )}
               </div>
             ))}
@@ -190,7 +206,7 @@ export default function MinimalEleganceModern({ data, color = "#2563eb", font = 
       {/* Hobbies */}
       {personal.hobbies?.length > 0 && (
         <div className="p-3">
-          <h2 className="text-base font-semibold mb-1" style={{ color }}>
+          <h2 className="text-base font-semibold mb-0" style={{ color }}>
             Hobbies
           </h2>
           <div className="flex flex-wrap gap-1">

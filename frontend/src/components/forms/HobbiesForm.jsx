@@ -1,4 +1,3 @@
-// src/components/forms/HobbiesForm.jsx
 import React from "react";
 
 export default function HobbiesForm({ hobbies = [], onChange }) {

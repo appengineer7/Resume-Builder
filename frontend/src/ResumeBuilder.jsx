@@ -10,6 +10,7 @@ import domToImage from "dom-to-image";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import "react-toastify/dist/ReactToastify.css";
+import AIGenerateDescription from "./components/forms/AIGenerator";
 
 // [Existing imports for templates and forms remain unchanged]
 import ClassicTemplate from "./components/templates/ClassicTemplate";
@@ -614,6 +615,7 @@ const hasShownToast = useRef(false);
               <SkillsForm
                 skills={data.skills}
                 onChange={(skills) => setData((prev) => ({ ...prev, skills }))}
+                jobTitle={data.personal.title || ""}
               />
             </div>
           </div>

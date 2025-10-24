@@ -80,9 +80,15 @@ export default function CreativeTemplate({ data, color = "#2563eb", font = "Inte
                   </div>
                 </div>
                 {exp.description && (
-                  <p className="mt-1 text-gray-800 text-[12px]">
-                    {truncateText(exp.description, 120)}
-                  </p>
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 )}
               </ItemBlock>
             ))}
@@ -112,7 +118,15 @@ export default function CreativeTemplate({ data, color = "#2563eb", font = "Inte
             {projects.slice(0, 2).map((proj) => (
               <ItemBlock key={proj.id} color={color}>
                 <div className="font-semibold text-[13px]">{proj.name}</div>
-                <div className="text-[12px]">{truncateText(proj.description, 100)}</div>
+                <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
               </ItemBlock>
             ))}
           </Section>

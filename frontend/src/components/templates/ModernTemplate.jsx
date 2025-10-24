@@ -46,7 +46,7 @@ export default function ModernTemplate({ data, color = "#2563eb" }) {
       </div>
 
       {/* Scrollable Section (same structure as ClassicTemplate) */}
-      <div style={{ flex: 1, overflow: "hidden" }} className="p-5 overflow-y-auto space-y-5">
+      <div style={{ flex: 1, overflow: "hidden" }} className="p-5 overflow-y-auto space-y-2">
         {/* Summary */}
         {personal.summary && (
           <Section title="Profile" color={color}>
@@ -72,11 +72,16 @@ export default function ModernTemplate({ data, color = "#2563eb" }) {
                     {exp.from} - {exp.to || "Present"}
                   </div>
                 </div>
-                {exp.description && (
-                  <div className="text-xs mt-1" style={{ fontSize: "11.5px" }}>
-                    {exp.description}
-                  </div>
-                )}
+                {exp.description && 
+                <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />}
               </div>
             ))}
           </Section>
@@ -109,9 +114,15 @@ export default function ModernTemplate({ data, color = "#2563eb" }) {
                 <div className="font-semibold" style={{ fontSize: "13px" }}>
                   {proj.name}
                 </div>
-                <div className="text-xs" style={{ fontSize: "11.5px" }}>
-                  {proj.description}
-                </div>
+                <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 {proj.technologies && (
                   <div className="text-xs italic" style={{ fontSize: "11.5px" }}>
                     Technologies: {proj.technologies}

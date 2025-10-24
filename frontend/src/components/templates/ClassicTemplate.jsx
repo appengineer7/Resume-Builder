@@ -19,7 +19,7 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
       }}
     >
       {/* Header */}
-      <div className="text-center mb-3">
+      <div className="text-center mb-1">
         <h1
           className="font-bold"
           style={{ color, fontSize: "22px", marginBottom: "3px" }} // ⬇ smaller heading
@@ -45,7 +45,7 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
         {experiences?.length > 0 && (
           <Section title="Experience" color={color}>
             {experiences.map((exp) => (
-              <div key={exp.id} className="mb-1.5">
+              <div key={exp.id} className="mb-2">
                 <div className="flex justify-between">
                   <div>
                     <div className="font-semibold" style={{ fontSize: "13px" }}>{exp.title || "Job Title"}</div>
@@ -55,7 +55,15 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
                     {exp.from} - {exp.to || "Present"}
                   </div>
                 </div>
-                <div className="text-xs" style={{ fontSize: "11.5px" }}>{exp.description}</div>
+                <div
+                    className="text-xs text-gray-700 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
               </div>
             ))}
           </Section>
@@ -64,7 +72,7 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
         {education?.length > 0 && (
           <Section title="Education" color={color}>
             {education.map((edu) => (
-              <div key={edu.id} className="mb-1.5">
+              <div key={edu.id} className="mb-1">
                 <div className="font-semibold" style={{ fontSize: "13px" }}>{edu.degree}</div>
                 <div className="text-xs" style={{ fontSize: "11.5px" }}>{edu.institution}</div>
                 <div className="text-xs italic" style={{ fontSize: "11.5px" }}>
@@ -78,9 +86,17 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
         {projects?.length > 0 && (
           <Section title="Projects" color={color}>
             {projects.map((proj) => (
-              <div key={proj.id} className="mb-1.5">
+              <div key={proj.id} className="mb-1">
                 <div className="font-semibold" style={{ fontSize: "13px" }}>{proj.name}</div>
-                <div className="text-xs" style={{ fontSize: "11.5px" }}>{proj.description}</div>
+                <div
+                    className="text-xs text-gray-700 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 {proj.technologies && (
                   <div className="text-xs italic" style={{ fontSize: "11.5px" }}>
                     Technologies: {proj.technologies}
@@ -117,7 +133,7 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
         {certifications?.length > 0 && (
           <Section title="Certifications" color={color}>
             {certifications.map((cert) => (
-              <div key={cert.id} className="text-xs mb-1.5" style={{ fontSize: "11.5px" }}>
+              <div key={cert.id} className="text-xs mb-1" style={{ fontSize: "11.5px" }}>
                 <div className="font-semibold" style={{ fontSize: "13px" }}>{cert.name}</div>
                 <div>{cert.issuer}</div>
                 {cert.date && <div className="italic">{cert.date}</div>}

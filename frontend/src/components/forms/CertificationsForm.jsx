@@ -1,4 +1,3 @@
-// src/components/forms/CertificationsForm.jsx
 import React from "react";
 
 export default function CertificationsForm({ certifications, onChange }) {

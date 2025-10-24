@@ -1,5 +1,5 @@
-// src/components/forms/ProjectsForm.jsx
 import React from "react";
+import AIGenerateDescription from "./AIGenerator";
 
 export default function ProjectsForm({ projects, onChange }) {
   const updateItem = (id, changes) => {
@@ -18,6 +18,10 @@ export default function ProjectsForm({ projects, onChange }) {
 
   const removeItem = (id) => {
     onChange(projects.filter((x) => x.id !== id));
+  };
+
+  const handleAIDescription = (id, generated) => {
+    updateItem(id, { description: generated });
   };
 
   return (
@@ -54,6 +58,16 @@ export default function ProjectsForm({ projects, onChange }) {
                 onChange={(e) => updateItem(proj.id, { name: e.target.value })}
               />
             </div>
+
+            {proj.name && (
+              <div className="flex justify-center">
+                <AIGenerateDescription
+                  title={proj.name}
+                  company="Personal Project"
+                  onGenerate={(generated) => handleAIDescription(proj.id, generated)}
+                />
+              </div>
+            )}
 
             {/* Description */}
             <div>

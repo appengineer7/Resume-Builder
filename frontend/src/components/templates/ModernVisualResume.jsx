@@ -147,9 +147,15 @@ export default function ModernVisualResume({
                     {exp.company}
                   </p>
                   {exp.description && (
-                    <p className="text-[11px] text-gray-600 mt-0.5">
-                      {exp.description}
-                    </p>
+                    <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                   )}
                 </div>
               ))}
@@ -193,9 +199,15 @@ export default function ModernVisualResume({
                       {proj.name}
                     </p>
                     {proj.description && (
-                      <p className="text-[11px] text-gray-700 mb-0.5">
-                        {proj.description}
-                      </p>
+                      <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                     )}
                     {proj.link && (
                       <a

@@ -1,4 +1,3 @@
-// src/components/forms/EducationForm.jsx
 import React from "react";
 
 export default function EducationForm({ education, onChange }) {

@@ -16,8 +16,8 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
     <div
       className="grid grid-cols-3 bg-white rounded-lg shadow-lg overflow-hidden"
       style={{
-        width: "210mm", 
-        height: "297mm", 
+        width: "210mm",
+        height: "297mm",
         fontFamily: `${font}, Arial, sans-serif`,
         fontSize: "14px",
       }}
@@ -143,7 +143,15 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
                 </div>
                 <p className="text-sm text-gray-600">{exp.company}</p>
                 {exp.description && (
-                  <p className="text-xs text-gray-700 mt-1">{exp.description}</p>
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 )}
               </div>
             ))}
@@ -157,7 +165,7 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
               className="text-xl font-semibold flex items-center gap-2 mb-2"
               style={{ color }}
             >
-             Education
+              Education
             </h3>
             {education.map((edu, i) => (
               <div
@@ -184,7 +192,7 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
               className="text-xl font-semibold flex items-center gap-2 mb-2"
               style={{ color }}
             >
-               Projects
+              Projects
             </h3>
             {projects.map((proj, i) => (
               <div
@@ -193,7 +201,16 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
                 style={{ borderColor: color }}
               >
                 <p className="font-semibold">{proj.name}</p>
-                {proj.description && <p className="text-sm">{proj.description}</p>}
+                {proj.description &&
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●')) // replaces leading "-" with "●"
+                        .join('<br>')
+                    }}
+                  />}
                 {proj.technologies && (
                   <p className="text-xs italic">Technologies: {proj.technologies}</p>
                 )}
@@ -219,7 +236,7 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
               className="text-xl font-semibold mb-2 flex items-center gap-2"
               style={{ color }}
             >
-               Skills
+              Skills
             </h3>
             <div className="flex flex-wrap gap-2">
               {skills.map((skill, i) => (

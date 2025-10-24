@@ -171,7 +171,16 @@ export default function UniqueDesignerResume({
                     <span className="text-[10px] text-gray-500">{exp.from} - {exp.to || "Present"}</span>
                   </div>
                   <p className="text-[11px] text-gray-700 font-medium mt-0.5">{exp.company}</p>
-                  {exp.description && <p className="text-[11px] text-gray-600 mt-0.5">{exp.description}</p>}
+                  {exp.description && 
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />}
                 </div>
               ))}
             </Section>
@@ -205,7 +214,16 @@ export default function UniqueDesignerResume({
                     className="p-2 border rounded bg-white shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300"
                   >
                     <p className="text-xs font-bold text-gray-900 mb-1">{proj.name}</p>
-                    {proj.description && <p className="text-[11px] text-gray-700 mb-0.5">{proj.description}</p>}
+                    {proj.description && 
+                    <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />}
                     {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-[11px] underline">{proj.link}</a>}
                   </div>
                 ))}

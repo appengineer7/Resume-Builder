@@ -57,7 +57,7 @@ export default function ProfessionalTemplate({
 
       {/* Summary */}
       {personal.summary && (
-        <div className="p-3">
+        <div className="p-2">
           <h3 className="text-lg font-semibold mb-1" style={{ color }}>
             About Me
           </h3>
@@ -73,7 +73,7 @@ export default function ProfessionalTemplate({
           </h3>
           <div className="border-l-2 border-gray-300 pl-3">
             {experiences.map((exp, i) => (
-              <div key={i} className="mb-3 relative">
+              <div key={i} className=" relative">
                 <div className="absolute -left-3 top-1 w-2.5 h-2.5 bg-blue-500 rounded-full"></div>
                 <div className="flex justify-between">
                   <div>
@@ -85,7 +85,15 @@ export default function ProfessionalTemplate({
                   </div>
                 </div>
                 {exp.description && (
-                  <p className="text-xs text-gray-700 mt-1">{exp.description}</p>
+                  <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 )}
               </div>
             ))}
@@ -101,7 +109,7 @@ export default function ProfessionalTemplate({
           </h3>
           <div className="border-l-2 border-gray-300 pl-3">
             {education.map((edu, i) => (
-              <div key={i} className="mb-3 relative">
+              <div key={i} className=" relative">
                 <div className="absolute -left-3 top-1 w-2.5 h-2.5 bg-green-500 rounded-full"></div>
                 <div className="font-semibold text-sm">
                   {edu.degree} - {edu.institution}
@@ -145,7 +153,15 @@ export default function ProfessionalTemplate({
             {projects.map((proj, i) => (
               <div key={i} className="p-2 border rounded shadow-sm text-xs">
                 <div className="font-semibold text-sm">{proj.name}</div>
-                <div className="text-gray-700">{proj.description}</div>
+                <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                 {proj.technologies && (
                   <div className="italic text-gray-500">
                     Tech: {proj.technologies}
@@ -166,7 +182,7 @@ export default function ProfessionalTemplate({
 
       {/* Certifications */}
       {certifications.length > 0 && (
-        <div className="m-3">
+        <div className="p-3">
           <h3 className="text-lg font-semibold mb-2 flex items-center gap-2" style={{ color }}>
            Certifications
           </h3>

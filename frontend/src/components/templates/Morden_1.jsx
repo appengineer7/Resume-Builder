@@ -186,9 +186,15 @@ export default function TrendyResumeTemplate({ data, color = "#4f46e5", font = "
                   </div>
                   <p className="text-gray-600 text-xs">{exp.company}</p>
                   {exp.description && (
-                    <p className="text-gray-700 text-[11px] mt-1 leading-snug">
-                      {exp.description}
-                    </p>
+                    <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: exp.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                   )}
                 </div>
               ))}
@@ -235,7 +241,15 @@ export default function TrendyResumeTemplate({ data, color = "#4f46e5", font = "
                 >
                   <p className="font-semibold text-sm">{proj.name}</p>
                   {proj.description && (
-                    <p className="text-[11px] mt-1 leading-snug">{proj.description}</p>
+                    <div
+                    className="text-xs text-gray-700 mt-1 whitespace-pre-line"
+                    dangerouslySetInnerHTML={{
+                      __html: proj.description
+                        .split('\n')
+                        .map(line => line.replace(/^-/, '●'))
+                        .join('<br>')
+                    }}
+                  />
                   )}
                   {proj.link && (
                     <a
