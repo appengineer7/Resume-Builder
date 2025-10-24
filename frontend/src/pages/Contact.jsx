@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { useNavigate } from "react-router-dom";
 import { Instagram, Mail, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -30,6 +31,16 @@ const Contact = () => {
       const data = await response.json();
       if (response.ok) {
         setSubmitStatus(data.message);
+        toast.success("Message sent successfully! We'll get back to you soon."), {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      };
+
         setFormData({ name: "", email: "", message: "" });
       } else {
         setSubmitStatus(data.message || "Failed to send message. Please try again later.");
@@ -101,14 +112,9 @@ const Contact = () => {
               Fill out the form below, and we'll respond within 24 hours.
             </p>
           </motion.div>
-          <Card className="border-0 bg-white/60 backdrop-blur-sm shadow-lg border border-white/20">
+          <Card className="border-0 bg-white/60 backdrop-blur-sm shadow-lg border border-white/20 p-4">
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {submitStatus && (
-                  <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-green-800 text-center">
-                    {submitStatus}
-                  </div>
-                )}
                 <div>
                   <Input
                     type="text"
