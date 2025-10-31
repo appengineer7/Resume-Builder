@@ -15,14 +15,14 @@ const AISuggestSkills = ({ onSuggest, jobTitle = "" }) => {
     try {
       // ChatGPT API for skill suggestions
       const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'openai/gpt-3.5-turbo',
           messages: [
             {
               role: 'system',
@@ -43,7 +43,19 @@ const AISuggestSkills = ({ onSuggest, jobTitle = "" }) => {
       }
 
       const data = await response.json();
-      const suggested = data.choices[0].message.content.trim().replace(/[\n\r]/g, ', ').split(',').map(s => s.trim()).filter(s => s);
+      let content = data.choices[0].message.content.trim();
+      content = content
+        .replace(/(\d+\.)|(\d+\))|[-•]/g, "")
+        .replace(/\s{2,}/g, " ")
+        .replace(/\n/g, ",")
+        .replace(/\r/g, ",")
+        .trim();
+
+      const suggested = content
+        .replace(/[\n\r]/g, ", ")
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
 
       onSuggest(suggested);
       toast.success("AI Skills Added Successfully!", { position: "top-right", autoClose: 3000 });
@@ -67,7 +79,7 @@ const AISuggestSkills = ({ onSuggest, jobTitle = "" }) => {
   );
 };
 
-export default function SkillsForm({ skills, onChange, jobTitle = "" }) { 
+export default function SkillsForm({ skills, onChange, jobTitle = "" }) {
   const addSkill = () => {
     onChange([...skills, ""]);
   };

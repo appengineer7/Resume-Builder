@@ -12,6 +12,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-label": "^2.1.7",
+    "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "dom-to-image": "^2.6.0",
     "file-saver": "^2.0.5",

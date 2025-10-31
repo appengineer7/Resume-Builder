@@ -18,6 +18,8 @@ import {
 } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
+import { AuthContext } from "../AuthContext.jsx";
+import { useContext } from "react";
 
 // Forgot Password Modal Component
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
@@ -429,7 +431,8 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 };
 
 // Login Modal Component
-const LoginModal = ({ isOpen, onClose, onSwitchToSignup, onSwitchToForgotPassword, setIsLoggedIn }) => {
+const LoginModal = ({ isOpen, onClose, onSwitchToSignup, onSwitchToForgotPassword,setIsLoggedIn }) => {
+  const {setUser = () => {} } = useContext(AuthContext) ?? {};
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -463,33 +466,24 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignup, onSwitchToForgotPasswor
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setIsLoading(true);
-      try {
-        const res = await fetch("http://localhost:5000/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(formData),
-        });
+  e.preventDefault();
+  if (validateForm()) {
+    setIsLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
 
-        const data = await res.json();
-        if (res.ok) {
-          setIsLoggedIn(true);
-          toast.success("Logged in successfully!", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
-          onClose();
+      
+      const data = await res.json();
+      if (res.ok) {
+        setUser(data.user);
+        setIsLoggedIn(true);
+        toast.success("Logged in successfully!");
+        onClose();
         } else {
           const errorMesssage = data.message || "Login failed. Please try again.";
           setErrors({ general: errorMesssage });
@@ -723,7 +717,7 @@ const Home = () => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/me", {
+        const res = await fetch("http://localhost:5000/api/auth/current-user", {
           method: "GET",
           credentials: "include",
         });
@@ -861,7 +855,7 @@ const Home = () => {
           draggable: true,
           progress: undefined,
           style: {
-            background: "#E74C3C", // red tone for error
+            background: "#E74C3C",
             color: "#fff",
           },
         });
@@ -889,7 +883,7 @@ const Home = () => {
           draggable: true,
           progress: undefined,
           style: {
-            background: "#27AE60", // red tone for logout
+            background: "#27AE60",
             color: "#fff",
           },
         });

@@ -14,18 +14,18 @@ const AIGenerateDescription = ({ title, company, onGenerate }) => {
     setIsGenerating(true);
     try {
       const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini', // Or 'gpt-3.5-turbo' for cost efficiency
+          model: 'openai/gpt-3.5-turbo',
           messages: [
             {
               role: 'system',
-              content: 'You are a professional resume writer. Generate 3-5 concise, achievement-oriented bullet points for a job experience. Use action verbs, quantify impacts where possible, and keep each under 2 lines.'
+              content: 'You are a professional resume writer. Generate 2-3 concise, achievement-oriented bullet points for a job experience. Use strong action verbs, quantify impact where possible, and keep each bullet point under two lines.'
             },
             {
               role: 'user',
@@ -42,7 +42,14 @@ const AIGenerateDescription = ({ title, company, onGenerate }) => {
       }
 
       const data = await response.json();
-      const generated = data.choices[0].message.content.trim();
+      let generated = data.choices[0].message.content.trim();
+      generated = generated
+        .replace(/(\d+\.)|(\d+\))|[-•]/g, "")
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .map(line => `- ${line}`)
+        .join("\n");
 
       onGenerate(generated);
       toast.success("AI suggest description added!", { position: "top-right", autoClose: 3000 });

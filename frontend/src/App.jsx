@@ -7,6 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancel from "./pages/PaymentCancel";
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,7 +17,7 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/auth/me", {
+        const res = await fetch("http://localhost:5000/api/auth/current-user", {
           method: "GET",
           credentials: "include",
         });
@@ -65,6 +67,8 @@ export default function App() {
         <Route path="/about" element={<About />}/>
         <Route path="/contact" element={ <Contact />} />
         <Route path="/privacy" element={ <Privacy />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route
           path="/builder"
           element={

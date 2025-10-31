@@ -116,7 +116,7 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
             <h3 className="text-xl font-semibold mb-2" style={{ color }}>
               About Me
             </h3>
-            <p className="text-gray-700 text-sm">{personal.summary}</p>
+            <p className="text-gray-700 text-xs">{personal.summary}</p>
           </section>
         )}
 
@@ -176,7 +176,7 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
                 <p className="font-semibold">
                   {edu.degree} - {edu.institution}
                 </p>
-                <p className="text-sm italic">
+                <p className="text-xs italic">
                   {edu.from} – {edu.to || "Present"}{" "}
                   {edu.grade && `· Grade: ${edu.grade}`}
                 </p>
@@ -242,7 +242,7 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
               {skills.map((skill, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 rounded-full text-sm font-medium text-white"
+                  className="px-3 py-1 rounded-full text-xs font-medium text-white"
                   style={{ background: color }}
                 >
                   {skill}

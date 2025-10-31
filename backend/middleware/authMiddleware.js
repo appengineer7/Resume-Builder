@@ -1,19 +1,20 @@
-import authController from "../controllers/authController";
-import { router } from "../routes/authRoutes";
+import jwt from "jsonwebtoken";
 
-// Middleware to verify JWT from cookie
 const authMiddleware = (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies?.token;
+
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Unauthorized – no token" });
   }
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
-  } catch (error) {
-    res.status(401).json({ message: "Unauthorized" });
+  } catch (err) {
+    console.error("JWT verify error:", err.message);
+    return res.status(401).json({ message: "Unauthorized – invalid token" });
   }
 };
 
-export default authMiddleware;
+export default authMiddleware; 

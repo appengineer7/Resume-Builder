@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
 
 const signup = async (req, res) => {
   try {
@@ -16,11 +18,13 @@ const signup = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
+      isPremium: process.env.TEST_PREMIUM_MODE === 'true',
+      premiumExpiresAt: process.env.TEST_PREMIUM_MODE === 'true' ? new Date(Date.now() + 30*24*60*60*1000) : undefined,
     });
 
     res.status(200).json({
@@ -30,6 +34,8 @@ const signup = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        isPremium: user.isPremium,
+        premiumExpiresAt: user.premiumExpiresAt,
       },
     });
   } catch (error) {
@@ -75,7 +81,7 @@ const login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -87,6 +93,7 @@ const login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        isPremium: user.isPremium,
       },
       statusCode: 200,
     });
@@ -228,7 +235,6 @@ const logout = async (req, res) => {
 
 const getCurrentUser = async (req, res) => {
   try {
-    // Extract token from cookie
     const token = req.cookies.token;
     if (!token) {
       return res.status(401).json({
@@ -240,7 +246,7 @@ const getCurrentUser = async (req, res) => {
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password"); // Exclude password
+    const user = await User.findById(decoded.id).select("-password"); // Exclude password, includes isPremium
 
     if (!user) {
       return res.status(404).json({
@@ -250,12 +256,22 @@ const getCurrentUser = async (req, res) => {
       });
     }
 
+    const now = new Date();
+    const hasActivePremium =
+      user.isPremium && user.premiumExpiresAt && now < user.premiumExpiresAt;
+    if (!hasActivePremium && user.isPremium) {
+      user.isPremium = false;
+      await user.save();
+    }
+
     res.status(200).json({
       status: "success",
       data: {
         id: user._id,
         name: user.name,
         email: user.email,
+        isPremium: hasActivePremium,
+        premiumExpiresAt: user.premiumExpiresAt,
       },
       statusCode: 200,
     });
