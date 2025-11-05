@@ -34,6 +34,17 @@ import CleanSidebarResume from "./components/templates/CleanSidebarResume.jsx";
 import ModernVisualResume from "./components/templates/ModernVisualResume.jsx";
 import UniqueDesignerResume from "./components/templates/UniqueDesignerResume.jsx";
 import ModernBlueResume from "./components/templates/ModernBlueResume.jsx";
+import MinimalistGridTemplate from "./components/templates/MinimalistGridTemplate.jsx";
+import ModernTemplateNormal from "./components/templates/ModernTemplateNormal.jsx";
+import NeoBrutalistA4Template from "./components/templates/NeoBrutalistA4Template.jsx";
+import UltraModernTemplate from "./components/templates/UltraModernTemplate.jsx";
+import ATSMinimalResume from "./components/templates/ATSMinimalResume.jsx";
+import CreativePortfolioResume from "./components/templates/CreativePortfolioResume.jsx";
+import ElegantVerticalResume from "./components/templates/ElegantVerticalResume.jsx";
+import GoogleMaterialResume from "./components/templates/GoogleMaterialResume.jsx";
+import InfographicResume from "./components/templates/InfographicResume.jsx";
+import MinimalEleganceModern from "./components/templates/MinimalEleganceTemplate.jsx";
+import StartupTechResume from "./components/templates/StartupTechResume.jsx";
 
 import PersonalForm from "./components/forms/PersonalForm";
 import ExperienceForm from "./components/forms/ExperienceForm";
@@ -66,6 +77,17 @@ import clean_sidebar from "./assets/images/template-image/clean-sidebar.png";
 import modern_visual from "./assets/images/template-image/modern-visual.png";
 import unique_designer from "./assets/images/template-image/unique-designer.png";
 import morderblue_resume from "./assets/images/template-image/morden_blue.png";
+import minimalist_grid_template from "./assets/images/template-image/minimalist_grid_template.png";
+import modernTemplateNormal from "./assets/images/template-image/ModernTemplateNormal.png";
+import neoBrutalistA4Template from "./assets/images/template-image/NeoBrutalistA4Template.png";
+import ultra_modern_template from "./assets/images/template-image/ultra_modern_template.png";
+import ATSMinimalResumeImg from "./assets/images/template-image/ATSMinimalResume.png";
+import CreativePortfolioResumeImg from "./assets/images/template-image/CreativePortfolioResume.png";
+import ElegantVerticalResumeImg from "./assets/images/template-image/ElegantVerticalResume.png";
+import GoogleMaterialResumeImg from "./assets/images/template-image/GoogleMaterialResume.png";
+import InfographicResumeImg from "./assets/images/template-image/InfographicResume.png";
+import MinimalEleganceModernImg from "./assets/images/template-image/MinimalEleganceModern.png";
+import StartupTechResumeImg from "./assets/images/template-image/StartupTechResume.png";
 
 const toastConfig = {
   position: "top-right",
@@ -97,6 +119,17 @@ const PrintResumeWrapper = forwardRef(({ data, color, font, template }, ref) => 
     ModernVisualResume: ModernVisualResume,
     UniqueDesignerResume: UniqueDesignerResume,
     MordenBlueResume: ModernBlueResume,
+    MinimalistGridTemplate: MinimalistGridTemplate,
+    ModernTemplateNormal: ModernTemplateNormal,
+    NeoBrutalistA4Template: NeoBrutalistA4Template,
+    UltraModernTemplate: UltraModernTemplate,
+    ATSMinimalResume: ATSMinimalResume,
+    CreativePortfolioResume: CreativePortfolioResume,
+    ElegantVerticalResume: ElegantVerticalResume,
+    GoogleMaterialResume: GoogleMaterialResume,
+    InfographicResume: InfographicResume,
+    MinimalEleganceModern: MinimalEleganceModern,
+    StartupTechResume: StartupTechResume,
     "new-temp": New_temp,
   }[template] || ClassicTemplate;
 
@@ -457,6 +490,17 @@ export default function ResumeBuilder() {
       img: unique_designer,
     },
     { id: "MordenBlueResume", label: "Morden Blue Resume", img: morderblue_resume },
+    { id: "MinimalistGridTemplate", label: "MinimalistGridTemplate", img: minimalist_grid_template},
+    { id: "ModernTemplateNormal", label: "ModernTemplateNormal", img: modernTemplateNormal },
+    { id: "NeoBrutalistA4Template", label: "NeoBrutalistA4Template", img: neoBrutalistA4Template },
+    { id: "UltraModernTemplate", label: "UltraModernTemplate", img: ultra_modern_template },
+    { id: "ATSMinimalResume", label: "ATSMinimalResume", img: ATSMinimalResumeImg},
+    { id: "CreativePortfolioResume", label: "CreativePortfolioResume", img: CreativePortfolioResumeImg},
+    { id: "ElegantVerticalResume", label: "ElegantVerticalResume", img: ElegantVerticalResumeImg},
+    { id: "GoogleMaterialResume", label: "GoogleMaterialResume", img: GoogleMaterialResumeImg},
+    { id: "InfographicResume", label: "InfographicResume", img: InfographicResumeImg},
+    { id: "MinimalEleganceModern", label: "MinimalEleganceModern", img: MinimalEleganceModernImg},
+    { id: "StartupTechResume", label: "StartupTechResume", img: StartupTechResumeImg},
     { id: "new-temp", label: "New Template", img: pro_two_col_Img },
   ];
 
