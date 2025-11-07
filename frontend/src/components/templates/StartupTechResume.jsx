@@ -186,6 +186,20 @@ export default function StartupTechResume({ data, font = "Inter", color = "#1118
           ))}
         </>
       )}
+
+      {personal.hobbies?.length > 0 && (
+        <>
+          <div style={sectionTitle}>Hobbies</div>
+          <div style={divider}></div>
+          {personal.hobbies.map((hobby, i) => (
+            <p key={i} style={{ marginBottom: "0px", fontSize: "12px" }}>
+              {hobby.name || hobby} {hobby.date && `(${hobby.date})`}
+            </p>
+          ))}
+        </>
+      )}
+
+      
     </div>
   );
 }

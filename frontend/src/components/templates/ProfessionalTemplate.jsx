@@ -50,7 +50,7 @@ export default function ProfessionalTemplate({
           </h1>
           <p className="italic text-base">{personal.title || "Job Title"}</p>
           <p className="text-xs text-gray-600">
-            {personal.email} · {personal.phone} · {personal.location}
+            {personal.email}<span> • </span>{personal.phone}<span> • </span>{personal.location}
           </p>
         </div>
       </div>

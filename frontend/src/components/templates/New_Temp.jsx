@@ -1,180 +1,157 @@
-// src/components/templates/CleanHeaderGridResume.jsx
+// src/components/templates/MNCExecutiveResume.jsx
 import React from "react";
 import { Mail, Phone, MapPin, Globe } from "lucide-react";
 
-export default function CleanHeaderGridResume({ data, color = "#0C3A5B", font = "Inter" }) {
-  const {
-    personal = {},
-    experiences = [],
-    education = [],
-    skills = [],
-    projects = [],
-    certifications = [],
-  } = data;
+export default function MNCExecutiveResume({ data, color = "#0F62FE", font = "Inter" }) {
+  const { personal = {}, experiences = [], education = [], skills = [], projects = [], certifications = [] } = data;
 
   return (
     <div
       style={{
         width: "210mm",
-        height: "297mm",
-        background: "#fff",
+        minHeight: "297mm",
         fontFamily: font,
+        background: "white",
+        color: "#0b0f16",
+        padding: "40px 32px",
         display: "flex",
         flexDirection: "column",
-        padding: "26px",
-        fontSize: "14px"
+        gap: 32,
       }}
     >
-      {/* HEADER */}
-      <div style={{ textAlign: "center", marginBottom: "14px" }}>
-        <h1 style={{ fontSize: "28px", fontWeight: "700", color }}>{personal.fullName}</h1>
-        <p style={{ fontSize: "15px", opacity: 0.9 }}>{personal.title}</p>
-      </div>
+      {/* Corporate Header */}
+      <header style={{ borderBottom: `3px solid ${color}`, paddingBottom: 18 }}>
+        <h1 style={{ fontSize: 30, margin: 0, fontWeight: 800 }}>{personal.fullName}</h1>
+        <div style={{ fontSize: 14, opacity: 0.85, fontWeight: 500 }}>{personal.title}</div>
 
-      {/* GRID CONTACT BAR */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4,1fr)",
-          background: color,
-          color: "white",
-          borderRadius: "8px",
-          padding: "8px 12px",
-          fontSize: "12.5px",
-          marginBottom: "22px",
-          gap: "8px"
-        }}
-      >
-        {personal.phone && <Item icon={<Phone size={14} />} text={personal.phone} />}
-        {personal.email && <Item icon={<Mail size={14} />} text={personal.email} />}
-        {personal.website && <Item icon={<Globe size={14} />} text={personal.website} />}
-        {personal.location && <Item icon={<MapPin size={14} />} text={personal.location} />}
-      </div>
+        <div className=" whitespace-nowrap" style={{ display: "flex", flexWrap: "wrap", gap: 24, marginTop: 12, fontSize: 13 }}>
+          {personal.phone && <Contact icon={<Phone size={14} />} text={personal.phone} />}
+          {personal.email && <Contact icon={<Mail size={14} />} text={personal.email} />}
+          {personal.location && <Contact icon={<MapPin size={14} />} text={personal.location} />}
+          {personal.website && <Contact icon={<Globe size={14} />} text={personal.website} />}
+        </div>
+      </header>
 
-      {/* SUMMARY */}
-      {personal.summary && (
-        <Section title="PROFESSIONAL SUMMARY" color={color}>
-          <p style={{ fontSize: "13px" }}>{personal.summary}</p>
-        </Section>
-      )}
+      {/* Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "65% 35%", gap: 24 }}>
+        {/* LEFT */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          {/* Summary */}
+          {personal.summary && (
+            <Section title="Executive Summary" color={color}>
+              <p style={{ fontSize: 13.2, lineHeight: 1.55 }}>{personal.summary}</p>
+            </Section>
+          )}
 
-      {/* EXPERIENCE */}
-      {experiences.length > 0 && (
-        <Section title="WORK EXPERIENCE" color={color}>
-          {experiences.map((exp, i) => (
-            <div key={i} style={{ marginBottom: "8px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600 }}>
-                <span>{exp.title}</span>
-                <span style={{ fontSize: "12px", opacity: 0.7 }}>
-                  {exp.from} - {exp.to || "Present"}
-                </span>
-              </div>
-              <p style={{ fontSize: "13px", fontWeight: 500 }}>{exp.company}</p>
-              {exp.description && (
-                <div
-                  style={{ fontSize: "12px", opacity: 0.95, marginTop: "4px" }}
-                  dangerouslySetInnerHTML={{
-                    __html: exp.description
-                      .split("\n")
-                      .map(line => line.replace(/^-/, "•"))
-                      .join("<br>")
-                  }}
-                />
-              )}
-            </div>
-          ))}
-        </Section>
-      )}
+          {/* Experience */}
+          {experiences.length > 0 && (
+            <Section title="Professional Experience" color={color}>
+              {experiences.map((e, i) => (
+                <div key={i} style={{ marginBottom: 16 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>{e.title}</div>
+                  <div style={{ fontSize: 13, opacity: 0.75 }}>{e.company}</div>
+                  <div style={{ fontSize: 12, opacity: 0.6 }}>{e.from} – {e.to || "Present"}</div>
 
-      {/* PROJECTS */}
-      {projects.length > 0 && (
-        <Section title="PROJECTS" color={color}>
-          {projects.map((proj, i) => (
-            <div key={i} style={{ marginBottom: "10px" }}>
-              <b style={{ fontSize: "13px" }}>{proj.name}</b>
-              <div
-                style={{ fontSize: "12px", opacity: 0.95 }}
-                dangerouslySetInnerHTML={{
-                  __html: proj.description
-                    ?.split("\n")
-                    .map(line => line.replace(/^-/, "•"))
-                    .join("<br>")
-                }}
-              />
-              {proj.technologies && (
-                <p style={{ fontSize: "11.5px", fontStyle: "italic", marginTop: "3px" }}>
-                  Tech: {proj.technologies}
-                </p>
-              )}
-              {proj.link && (
-                <p style={{ fontSize: "11.5px", color }}>
-                  {proj.link}
-                </p>
-              )}
-            </div>
-          ))}
-        </Section>
-      )}
-
-      {/* EDUCATION */}
-      {education.length > 0 && (
-        <Section title="EDUCATION" color={color}>
-          {education.map((edu, i) => (
-            <div key={i} style={{ marginBottom: "10px" }}>
-              <b style={{ fontSize: "13px" }}>{edu.degree}</b>
-              <p style={{ fontSize: "12.5px" }}>{edu.institution}</p>
-              <p style={{ fontSize: "11.5px", opacity: 0.8 }}>
-                {edu.from} - {edu.to || "Present"}
-              </p>
-            </div>
-          ))}
-        </Section>
-      )}
-
-      {/* SKILLS + CERTIFICATION ROW */}
-      <div style={{ display: "flex", gap: "30px" }}>
-        {skills.length > 0 && (
-          <Section title="SKILLS" color={color} noMargin>
-            <ul style={{ fontSize: "12.5px", listStyle: "disc", paddingLeft: "18px" }}>
-              {skills.map((s, i) => <li key={i}>{s}</li>)}
-            </ul>
-          </Section>
-        )}
-
-        {certifications.length > 0 && (
-          <Section title="CERTIFICATIONS" color={color} noMargin>
-            <ul style={{ fontSize: "12.5px", listStyle: "disc", paddingLeft: "18px" }}>
-              {certifications.map((c, i) => (
-                <li key={i}>
-                  {c.name} {c.date && `(${c.date})`}
-                </li>
+                  {e.description && (
+                    <ul style={{ fontSize: 12.5, marginLeft: 20, marginTop: 4 }}>
+                      {e.description.split("\n").map((line, idx) => (
+                        <li key={idx}>{line.replace(/^-/, "")}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               ))}
-            </ul>
-          </Section>
-        )}
+            </Section>
+          )}
+
+          {/* Key Projects */}
+          {projects.length > 0 && (
+            <Section title="Strategic Projects" color={color}>
+              {projects.map((p, i) => (
+                <div key={i} style={{ marginBottom: 14 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>{p.name}</div>
+                  {p.link && <a href={p.link} style={{ fontSize: 11.5, textDecoration: "none", color }}>{p.link}</a>}
+                  {p.description && (
+                    <ul style={{ fontSize: 12.5, marginLeft: 20 }}>
+                      {p.description.split("\n").map((line, idx) => (
+                        <li key={idx}>{line.replace(/^-/, "")}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </Section>
+          )}
+        </div>
+
+        {/* RIGHT */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          {/* Skills */}
+          {skills.length > 0 && (
+            <Section title="Core Competencies" color={color}>
+              <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.5, fontSize: 12.5 }}>
+                {skills.map((s, i) => (
+                  <li key={i}>{s}</li>
+                ))}
+              </ul>
+            </Section>
+          )}
+
+          {/* Certifications */}
+          {certifications.length > 0 && (
+            <Section title="Certifications" color={color}>
+              {certifications.map((c, i) => (
+                <div key={i} style={{ fontSize: 12.7, marginBottom: 4 }}>
+                  ✅ {c.name} {c.date && <span style={{ opacity: 0.6 }}>({c.date})</span>}
+                </div>
+              ))}
+            </Section>
+          )}
+
+          {/* Education */}
+          {education.length > 0 && (
+            <Section title="Education" color={color}>
+              {education.map((ed, i) => (
+                <div key={i} style={{ marginBottom: 12 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13.5 }}>{ed.degree}</div>
+                  <div style={{ fontSize: 12.8, opacity: 0.75 }}>{ed.institution}</div>
+                  <div style={{ fontSize: 12, opacity: 0.6 }}>{ed.from} – {ed.to || "Present"}</div>
+                </div>
+              ))}
+            </Section>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-// Helpers
-function Item({ icon, text }) {
-  return <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>{icon}{text}</div>;
+/* Components */
+function Section({ title, color, children }) {
+  return (
+    <section style={{ borderLeft: `4px solid ${color}`, paddingLeft: 12 }}>
+      <h4 style={{ fontWeight: 800, fontSize: 13, margin: 0, marginBottom: 6 }}>{title}</h4>
+      {children}
+    </section>
+  );
 }
 
-function Section({ title, color, children, noMargin }) {
+function Contact({ icon, text }) {
   return (
-    <div style={{ marginBottom: noMargin ? "0px" : "8px" }}>
-      <h3 style={{
-        fontWeight: "700",
-        fontSize: "13.5px",
-        marginBottom: "6px",
-        borderBottom: `2px solid ${color}`,
-        paddingBottom: "2px"
-      }}>
-        {title}
-      </h3>
-      {children}
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      {icon}
+      <span>{text}</span>
     </div>
   );
+}
+
+/* Utils */
+function withOpacity(hex, alpha = 1) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+function hexToRgb(hex) {
+  const raw = hex.replace("#", "");
+  const bigint = parseInt(raw.length === 3 ? raw.split("").map((c) => c + c).join("") : raw, 16);
+  return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
 }

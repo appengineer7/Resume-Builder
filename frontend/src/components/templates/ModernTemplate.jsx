@@ -39,9 +39,10 @@ export default function ModernTemplate({ data, color = "#2563eb" }) {
           </p>
         </div>
         <div className="text-right mr-3" style={{ fontSize: "11.5px", color: "#374151" }}>
-          <div>{personal.email}</div>
-          <div>{personal.phone}</div>
-          <div>{personal.location}</div>
+          <div><span>• </span>{personal.email}</div>
+          
+          <div><span>• </span>{personal.phone}</div>
+          <div><span>• </span>{personal.location}</div>
         </div>
       </div>
 

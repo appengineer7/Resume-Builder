@@ -29,8 +29,12 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
         <p className="italic" style={{ color: shadeColor(color, 0.2), fontSize: "13px" }}>
           {personal.title || "Job Title"}
         </p>
-        <p className="text-xs" style={{ color: "#374151", fontSize: "11.5px" }}>
-          {personal.email} · {personal.phone} · {personal.location}
+        <p className="text-xs items-center gap-1" style={{ color: "#374151", fontSize: "11.5px" }}>
+          {personal.email}
+          <span> • </span>
+          {personal.phone}
+          <span> • </span>
+          {personal.location}
         </p>
       </div>
 
@@ -56,14 +60,14 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
                   </div>
                 </div>
                 <div
-                    className="text-xs text-gray-700 whitespace-pre-line"
-                    dangerouslySetInnerHTML={{
-                      __html: exp.description
-                        .split('\n')
-                        .map(line => line.replace(/^-/, '●'))
-                        .join('<br>')
-                    }}
-                  />
+                  className="text-xs text-gray-700 whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: exp.description
+                      .split('\n')
+                      .map(line => line.replace(/^-/, '●'))
+                      .join('<br>')
+                  }}
+                />
               </div>
             ))}
           </Section>
@@ -89,14 +93,14 @@ export default function ClassicTemplate({ data, color = "#111827", font = "Inter
               <div key={proj.id} className="mb-1">
                 <div className="font-semibold" style={{ fontSize: "13px" }}>{proj.name}</div>
                 <div
-                    className="text-xs text-gray-700 whitespace-pre-line"
-                    dangerouslySetInnerHTML={{
-                      __html: proj.description
-                        .split('\n')
-                        .map(line => line.replace(/^-/, '●'))
-                        .join('<br>')
-                    }}
-                  />
+                  className="text-xs text-gray-700 whitespace-pre-line"
+                  dangerouslySetInnerHTML={{
+                    __html: proj.description
+                      .split('\n')
+                      .map(line => line.replace(/^-/, '●'))
+                      .join('<br>')
+                  }}
+                />
                 {proj.technologies && (
                   <div className="text-xs italic" style={{ fontSize: "11.5px" }}>
                     Technologies: {proj.technologies}
@@ -166,7 +170,7 @@ function Section({ title, color, children }) {
     <div className="mb-2">
       <h3
         className="font-semibold border-b border-cyan-400 pb-0.5 mb-0.5"
-        style={{ color, fontSize: "14px"  }} // ⬇ smaller section title
+        style={{ color, fontSize: "14px" }} // ⬇ smaller section title
       >
         {title}
       </h3>

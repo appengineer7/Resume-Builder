@@ -1,5 +1,6 @@
 // src/components/templates/ModernSidebarTemplate.jsx
 import React from "react";
+import { Mail, Phone, MapPin } from "lucide-react";
 
 
 export default function ModernSidebarTemplate({ data, color = "#2563eb", font = "Inter" }) {
@@ -44,9 +45,20 @@ export default function ModernSidebarTemplate({ data, color = "#2563eb", font = 
 
         {/* Contact Info */}
         <div className="mt-4 text-sm text-gray-700 space-y-1">
-          {personal.email && <p>{personal.email}</p>}
-          {personal.phone && <p>{personal.phone}</p>}
-          {personal.location && <p>{personal.location}</p>}
+          {personal.email && (
+            <p className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              {personal.email}</p>
+          )}
+
+          {personal.phone && (
+            <p className=" flex items-center gap-2">
+              <Phone className="w-4 h-4" />
+              {personal.phone}</p>)}
+          {personal.location && (
+            <p className="flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              {personal.location}</p>)}
         </div>
 
         {/* Sidebar Skills */}

@@ -1,6 +1,6 @@
 // src/components/templates/CreativeTemplate.jsx
 import React from "react";
-
+import { Mail, Phone, MapPin } from "lucide-react";
 
 export default function CreativeTemplate({ data, color = "#2563eb", font = "Inter" }) {
   const {
@@ -48,11 +48,30 @@ export default function CreativeTemplate({ data, color = "#2563eb", font = "Inte
         <p className="italic" style={{ fontSize: "13px" }}>
           {personal.title}
         </p>
-        <div className="mt-1 text-xs flex flex-wrap gap-2">
-          {personal.email && <span>{personal.email}</span>}
-          {personal.phone && <span>· {personal.phone}</span>}
-          {personal.location && <span>· {personal.location}</span>}
-        </div>
+
+<div className="mt-1 text-xs flex flex-wrap gap-2 items-center" >
+  {personal.email && (
+    <span className="flex items-center gap-1">
+      <Mail className="w-3.5 h-3.5" />
+      {personal.email}
+    </span>
+  )}
+
+  {personal.phone && (
+    <span className="flex items-center gap-1">
+      <Phone className="w-3.5 h-3.5" />
+      {personal.phone}
+    </span>
+  )}
+
+  {personal.location && (
+    <span className="flex items-center gap-1">
+      <MapPin className="w-3.5 h-3.5" />
+      {personal.location}
+    </span>
+  )}
+</div>
+
       </div>
 
      

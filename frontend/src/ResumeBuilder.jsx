@@ -45,6 +45,12 @@ import GoogleMaterialResume from "./components/templates/GoogleMaterialResume.js
 import InfographicResume from "./components/templates/InfographicResume.jsx";
 import MinimalEleganceModern from "./components/templates/MinimalEleganceTemplate.jsx";
 import StartupTechResume from "./components/templates/StartupTechResume.jsx";
+import CleanHeaderGridResume from "./components/templates/CleanHeaderGridResume.jsx";
+import NeonGlassResume from "./components/templates/NeonGlassResume.jsx";
+import CreativeBrandResume from "./components/templates/CreativeBrandResume.jsx";
+import CreativeBrandResumeV2 from "./components/templates/CreativeBrandResumeV2.jsx";
+import CreativeBrandResumeV3 from "./components/templates/CreativeBrandResumeV3.jsx";
+import MNCExecutiveResume from "./components/templates/MNCExecutiveResume.jsx";
 
 import PersonalForm from "./components/forms/PersonalForm";
 import ExperienceForm from "./components/forms/ExperienceForm";
@@ -88,6 +94,12 @@ import GoogleMaterialResumeImg from "./assets/images/template-image/GoogleMateri
 import InfographicResumeImg from "./assets/images/template-image/InfographicResume.png";
 import MinimalEleganceModernImg from "./assets/images/template-image/MinimalEleganceModern.png";
 import StartupTechResumeImg from "./assets/images/template-image/StartupTechResume.png";
+import CleanHeaderGridResumeImg from "./assets/images/template-image/CleanHeaderGridResume.png";
+import NeonGlassResumeImg from "./assets/images/template-image/NeonGlassResume.png";
+import CreativeBrandResumeImg from "./assets/images/template-image/CreativeBrandResume.png";
+import CreativeBrandResumeV2Img from "./assets/images/template-image/CreativeBrandResumeV2.png";
+import CreativeBrandresumeV3Img from "./assets/images/template-image/CreativeBrandResumeV3.png";
+import MNCExecutiveResumeImg from "./assets/images/template-image/MNCExecutiveResume.png";
 
 const toastConfig = {
   position: "top-right",
@@ -130,6 +142,12 @@ const PrintResumeWrapper = forwardRef(({ data, color, font, template }, ref) => 
     InfographicResume: InfographicResume,
     MinimalEleganceModern: MinimalEleganceModern,
     StartupTechResume: StartupTechResume,
+    CleanHeaderGridResume: CleanHeaderGridResume,
+    NeonGlassResume: NeonGlassResume,
+    CreativeBrandResume: CreativeBrandResume,
+    CreativeBrandResumeV2: CreativeBrandResumeV2,
+    CreativeBrandResumeV3: CreativeBrandResumeV3,
+    MNCExecutiveResume: MNCExecutiveResume,
     "new-temp": New_temp,
   }[template] || ClassicTemplate;
 
@@ -501,6 +519,12 @@ export default function ResumeBuilder() {
     { id: "InfographicResume", label: "InfographicResume", img: InfographicResumeImg},
     { id: "MinimalEleganceModern", label: "MinimalEleganceModern", img: MinimalEleganceModernImg},
     { id: "StartupTechResume", label: "StartupTechResume", img: StartupTechResumeImg},
+    { id: "CleanHeaderGridResume", label: "CleanHeaderGridResume", img: CleanHeaderGridResumeImg},
+    { id: "NeonGlassResume", label: "NeonGlassResume", img: NeonGlassResumeImg},
+    { id: "CreativeBrandResume", label: "CreativeBrandResume", img: CreativeBrandResumeImg},
+    { id: "CreativeBrandResumeV2", label: "CreativeBrandResumeV2", img: CreativeBrandResumeV2Img},
+    { id: "CreativeBrandResumeV3", label: "CreativeBrandResumeV3", img: CreativeBrandresumeV3Img},
+    { id: "MNCExecutiveResume", label: "MNCExecutiveResume", img: MNCExecutiveResumeImg},
     { id: "new-temp", label: "New Template", img: pro_two_col_Img },
   ];
 
