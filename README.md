@@ -1,9 +1,22 @@
 # Resume Builder
 
+A web-based Resume Builder application designed to help users create professional resumes.
+
+## Project Structure
+
+- `frontend/` – Frontend application
+- `backend/` – Backend application
+
+## Copyright & Usage
+
 Copyright (c) 2026 App Engineer. All Rights Reserved.
 
-This project is publicly available for viewing on GitHub.
-Reuse, modification, redistribution, or commercial use
-requires prior written permission from the owner.
+This repository is publicly available for viewing and educational reference.
 
-For licensing inquiries, please contact the repository owner.
+No permission is granted to copy, modify, redistribute, or commercially use this software without prior written permission from the copyright owner, subject to GitHub's Terms of Service.
+
+For licensing or commercial use, please contact the repository owner.
+
+## License
+
+All Rights Reserved. See the [LICENSE](LICENSE) file for details.
